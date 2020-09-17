@@ -1,0 +1,13 @@
+{ "rooms": [
+  {
+    "roomCoordinates" : [1, 1],
+    "availableDoors" : ["east"],
+    "unavailableDoors" :  [""],
+    "availableItems" :  [""],
+    "unavailableItems" : ["key"],
+    "primaryDescription" : "You're in a dark room with one visible door.",
+    "secondaryDescription" : "After using the torch, you see a sparkle in one of the cracks. After investigating, you see a key",
+    "hasPlayerBeenHere": true
+  }
+]
+}

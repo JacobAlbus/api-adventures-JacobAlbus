@@ -1,0 +1,24 @@
+{ "questions": [
+  {
+    "question" : "What is the product of the squares of four and two",
+    "answer" : "64"
+  },
+  {
+    "question" :"Give me pi to the first 3 digits",
+    "answer" : "3.14"
+  },
+  {
+    "question" : "What is the standard representation for the square root of negative one",
+    "answer" : "i"
+  },
+  {
+    "question" : "What is the cube of the sixth element in the set of all natural numbers",
+    "answer" : "216"
+  },
+  {
+    "question" : "What is the factorial of 0",
+    "answer" : "1"
+  }
+
+]
+}
