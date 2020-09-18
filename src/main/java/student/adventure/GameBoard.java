@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GameBoard {
-    protected List<Room> rooms;
+    private List<Room> rooms;
 
     public GameBoard(List<Room> rooms){
         this.rooms = rooms;
@@ -14,8 +14,8 @@ public class GameBoard {
         return rooms.size();
     }
 
-    public Room getRoom(int i){
-        return rooms.get(i);
+    public Room getRoom(int index){
+        return rooms.get(index);
     }
 
     /**
@@ -23,8 +23,8 @@ public class GameBoard {
      * @return the Room object player is currently in
      */
     public Room findPlayerCurrentRoom(Player player){
+        // check for nulls
         for(Room room : rooms){
-
             if(Arrays.equals(player.getPosition(), room.getRoomCoordinates())){
                 room.setHasPlayerBeenHere(true);
                 return room;

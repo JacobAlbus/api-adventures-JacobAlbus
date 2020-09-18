@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.junit.Assert;
@@ -13,9 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PlayerTests {
-    GameEngine engine;
-    Player player;
-    GameBoard board;
+    private GameEngine engine;
+    private Player player;
+    private GameBoard board;
 
     @Before
     public void setUp() throws IOException {
@@ -28,8 +29,8 @@ public class PlayerTests {
     public void testPlayerUpdatePositionEast(){
         player.updatePosition(board.getRoom(0),"east");
 
-        int [] position = player.getPosition();
-        int [] roomCoordinates = board.getRoom(1).getRoomCoordinates();
+        int[] position = player.getPosition();
+        int[] roomCoordinates = board.getRoom(1).getRoomCoordinates();
 
         assertArrayEquals(roomCoordinates, position);
     }
@@ -39,9 +40,8 @@ public class PlayerTests {
         player.updatePosition(board.getRoom(0),"east");
         player.updatePosition(board.getRoom(1),"west");
 
-        int [] position = player.getPosition();
-        int [] roomCoordinates = board.getRoom(0).getRoomCoordinates();
-
+        int[] position = player.getPosition();
+        int[] roomCoordinates = board.getRoom(0).getRoomCoordinates();
 
         assertArrayEquals(roomCoordinates, position);
     }
@@ -51,8 +51,8 @@ public class PlayerTests {
         player.updatePosition(board.getRoom(0),"east");
         player.updatePosition(board.getRoom(1),"north");
 
-        int [] position = player.getPosition();
-        int [] roomCoordinates = board.getRoom(2).getRoomCoordinates();
+        int[] position = player.getPosition();
+        int[] roomCoordinates = board.getRoom(2).getRoomCoordinates();
 
         assertArrayEquals(roomCoordinates, position);
     }
@@ -63,8 +63,8 @@ public class PlayerTests {
         player.updatePosition(board.getRoom(1),"north");
         player.updatePosition(board.getRoom(2),"south");
 
-        int [] position = player.getPosition();
-        int [] roomCoordinates = board.getRoom(1).getRoomCoordinates();
+        int[] position = player.getPosition();
+        int[] roomCoordinates = board.getRoom(1).getRoomCoordinates();
 
         assertArrayEquals(roomCoordinates, position);
     }
@@ -109,13 +109,13 @@ public class PlayerTests {
         System.setOut(ps);
 
         player.takeItem(board.getRoom(1), "torch");
-        player.checkInventory();
+        player.printInventory();
 
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[1];
-        assertEquals(" bob's Inventory: [torch]\r\n", printedString);
+        String printedString = baos.toString();
+        assertEquals("bob's Inventory: [torch]\r\n", printedString);
     }
 
     @Test
@@ -129,6 +129,7 @@ public class PlayerTests {
     @Test
     // Code from here: https://stackoverflow.com/questions/8708342/redirect-console-output-to-string-in-java
     public void testPlayerTakeItemNotFoundInRoom(){
+        // figure out what this does and write proper variable names
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -139,7 +140,7 @@ public class PlayerTests {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[0];
+        String printedString = baos.toString();
         assertEquals("It seems like the room doesn't have that item\r\n", printedString);
     }
 
@@ -149,8 +150,11 @@ public class PlayerTests {
         player.takeItem(board.getRoom(1), "torch");
         player.dropItem(board.getRoom(1), "torch");
 
-        Assert.assertTrue(board.getRoom(1).getAvailableItems().contains("torch"));
-        Assert.assertFalse(player.getItems().contains("torch"));
+        List<String> itemsInRoom = board.getRoom(1).getAvailableItems();
+        List<String> playerItems = player.getItems();
+
+        Assert.assertTrue(itemsInRoom.contains("torch") && itemsInRoom.size() == 1);
+        Assert.assertFalse(playerItems.contains("torch") && playerItems.size() == 1);
     }
 
     @Test
@@ -167,7 +171,7 @@ public class PlayerTests {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[0];
+        String printedString = baos.toString();
         assertEquals("It seems like you don't have that item\r\n", printedString);
     }
 
@@ -185,8 +189,8 @@ public class PlayerTests {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[1];
-        assertEquals(" Can't drop the item, it's already in the room\r\n", printedString);
+        String printedString = baos.toString();
+        assertEquals("Can't drop the item, it's already in the room\r\n", printedString);
     }
 
     @Test
@@ -202,7 +206,7 @@ public class PlayerTests {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[0];
+        String printedString = baos.toString();
         assertEquals("You do not have this item\r\n", printedString);
     }
 
@@ -220,8 +224,8 @@ public class PlayerTests {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[1].trim();
-        assertEquals("It appears that the item has no use here", printedString);
+        String printedString = baos.toString();
+        assertEquals("It appears that the item has no use here\r\n", printedString);
     }
 
     @Test
@@ -239,7 +243,7 @@ public class PlayerTests {
         System.setOut(old);
 
         String printedString = baos.toString();
-        assertEquals("bob's Inventory: [knife]\r\n> Sorry but that item has no use\r\n> ", printedString);
+        assertEquals("Sorry but that item has no use\r\n", printedString);
     }
 
     @Test
@@ -296,9 +300,12 @@ public class PlayerTests {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[1].trim();
+        String printedString = baos.toString();
         assertEquals("You have begun the eternal math test, pick your answers wisely!\r\n" +
-                "What is the product of the squares of four and two", printedString);
+                "What is the product of the squares of four and two\r\n" +
+                "> Correct\r\n" +
+                "Give me pi to the first 3 digits\r\n" +
+                "> ", printedString);
     }
 
     @Test
@@ -312,12 +319,12 @@ public class PlayerTests {
         PrintStream old = System.out;
         System.setOut(ps);
 
-        player.mathQuestion("What's 4 times 16", "64");
+        player.askMathQuestion("What's 4 times 16", "64");
 
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[1].trim();
-        assertEquals("Correct", printedString);
+        String printedString = baos.toString();
+        assertEquals("What's 4 times 16\r\n> Correct\r\n", printedString);
     }
 }

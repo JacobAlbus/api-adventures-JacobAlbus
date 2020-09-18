@@ -11,9 +11,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class RoomsTest {
-    GameEngine engine;
-    Player player;
-    GameBoard board;
+    private GameEngine engine;
+    private Player player;
+    private GameBoard board;
 
     @Before
     public void setUp() throws IOException {

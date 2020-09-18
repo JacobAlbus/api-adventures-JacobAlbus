@@ -6,27 +6,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameEngine {
-    // Made protected instead of static for testing purposes
-    protected GameBoard board;
-    protected Player player;
-    private static Scanner gameMaster = new Scanner(System.in);
-
-    public static void main(String[] args) throws IOException {
-        // Scanner prompt for name moved to main method for testing purposes
-        System.out.println("Hello player! What would you like to name your adventurer?");
-        printInputPrompt();
-        String name = gameMaster.nextLine();
-        System.out.println(".\n" + ".\n" + ".\n.");
-
-        GameEngine engine = new GameEngine("src/main/resources/Rooms.json", name);
-        engine.gameLoop();
-    }
+    GameBoard board;
+    Player player;
+    private final List<String> actions = new ArrayList<>(Arrays.asList("use", "take", "drop", "go", "check",
+                                                                       "examine", "help", "map", "exit", "quit"));
+    private final Scanner userInput = new Scanner(System.in);
 
     /**
      * Initializes Player and GameBoard object
@@ -40,6 +27,7 @@ public class GameEngine {
 
             board = gson.fromJson(reader, GameBoard.class);
             reader.close();
+            // ask elizabeth why we don't want to throw an exception
         } catch (NullPointerException e) {
             throw new NullPointerException("The json file passed is null");
         } catch (IOException e) {
@@ -48,25 +36,27 @@ public class GameEngine {
     }
 
     /**
-     * Contains main loop for game: prompts player for input then filters and
-     * processes input to figure out what player wants to do
+     * Contains main loop for game: explore a mysterious dungeon and solve puzzles to escape!
      */
-    public void gameLoop(){
-        int[] winRoom = board.getRoom(10).getRoomCoordinates();
-        
+    public void playGame(){
+        int winRoomIndex = 10;
+        int[] winRoom = board.getRoom(winRoomIndex).getRoomCoordinates();
         Room room = board.findPlayerCurrentRoom(player);
         room.printRoomMessage();
+
         while(true){
+            printInputPrompt();
             room = board.findPlayerCurrentRoom(player);
+
             // Message for when player enters the final/winners Room
             if(Arrays.equals(room.getRoomCoordinates(), winRoom)){
                 System.out.println("You win! Play again to venture back into your dorm");
                 break;
             }
 
-            ArrayList<String> inputs = filterInputs();
-            String action = inputs.get(0);
-            String noun = inputs.get(1);
+            List<String>  inputs = filterInputs();
+            String  action = inputs.get(0);
+            String  noun = inputs.get(1);
 
             if(action.equals("exit") || action.equals("quit")){
                 break;
@@ -82,45 +72,49 @@ public class GameEngine {
      *         and a 'noun' (usually an item or direction)
      */
     public ArrayList<String> filterInputs(){
-        ArrayList<String> actions = new ArrayList<>(Arrays.asList("use", "take", "drop", "go", "check",
-                                                                  "examine", "help", "map", "exit", "quit"));
-        ArrayList<String> processedInputs = new ArrayList<>();
+        ArrayList<String> filteredInputs = new ArrayList<>();
+        String[] playerInputs = userInput.nextLine().toLowerCase().split("\\s+");
+        int inputWordIndex = 0;
 
-        String[] playerInputs = gameMaster.nextLine().toLowerCase().split(" ");
+        String action = playerInputs[inputWordIndex];
+        inputWordIndex++;
+        if(action.equals("") && playerInputs.length > 1){
+            action = playerInputs[inputWordIndex];
+            inputWordIndex++;
+        }
 
-        // Sees how many different words user inputted,
-        // tracks first and second if more than one, only tracks first otherwise
-        String action = playerInputs[0];
-        String noun;
-        if(playerInputs.length > 1){
-            noun = playerInputs[1];
-        } else{
-            noun = "foo";
+        StringBuilder noun = new StringBuilder();
+        for(int index = inputWordIndex; index < playerInputs.length; index++){
+            noun.append(playerInputs[index]);
+            if(index != playerInputs.length - 1){
+                noun.append(" ");
+            }
         }
 
         if(actions.contains(action)){
-            Collections.addAll(processedInputs, action, noun);
+            Collections.addAll(filteredInputs, action, noun.toString());
         } else{
-            // adds filler to reset input loop
-            Collections.addAll(processedInputs, "foo", "bar");
+            return null;
         }
 
-        return processedInputs;
+        return filteredInputs;
     }
 
     /**
-     * Contains a switch tree that calls certain methods depending on param 'action' from user input
+     * Given valid inputs, executes method corresponding to some action
      * @param room the Room object player is currently in
      * @param action command for the player (use, go, examine, take, check etc.)
      * @param noun object or thing the player interacts with (usually an item or direction)
      */
     public void processInputs(Room room, String action, String noun){
+        // ask elizabeth about magic strings
         switch(action){
             case "examine":
                 room.printRoomMessage();
                 break;
             case "take":
                 player.takeItem(room, noun);
+                player.printInventory();
                 break;
             case "drop":
                 player.dropItem(room, noun);
@@ -135,7 +129,7 @@ public class GameEngine {
                 }
                 break;
             case "check":
-                player.checkInventory();
+                player.printInventory();
                 break;
             case "map":
                 printOutMap();
@@ -145,7 +139,6 @@ public class GameEngine {
                 break;
             default:
                 System.out.println("I couldn't understand that command. Input 'help' to see list of commands");
-                printInputPrompt();
         }
     }
 
@@ -153,19 +146,19 @@ public class GameEngine {
      * Prints out a map of all rooms player has been in
      */
     public void printOutMap(){
-        String[][] mapArray = createMapArray();
+        char[][] mapOfRoomsVisited = createMapArray();
 
         // Converts 2d String array into a single String
-        StringBuilder mapString = new StringBuilder();
-        for(int columnIndex = mapArray[0].length - 1; columnIndex >= 0; columnIndex--){
-            for(int rowIndex = 0; rowIndex < mapArray.length; rowIndex++){
-                mapString.append(mapArray[rowIndex][columnIndex]);
+        // ask elizabeth about rows then columns comment
+        StringBuilder printedMap = new StringBuilder();
+        for(int columnIndex = mapOfRoomsVisited[0].length - 1; columnIndex >= 0; columnIndex--){
+            for(int rowIndex = 0; rowIndex < mapOfRoomsVisited.length; rowIndex++){
+                printedMap.append(mapOfRoomsVisited[rowIndex][columnIndex]);
             }
-            mapString.append("\n");
+            printedMap.append("\n");
         }
 
-        System.out.println(mapString);
-        printInputPrompt();
+        System.out.println(printedMap);
     }
 
     /**
@@ -179,7 +172,6 @@ public class GameEngine {
                 "Input examine to see room information \n" +
                 "Input check to see all items currently in inventory \n" +
                 "Input exit or quit to stop playing Adventure");
-        printInputPrompt();
     }
 
     /**
@@ -194,7 +186,7 @@ public class GameEngine {
         for(int roomIndex = 0; roomIndex < board.getBoardSize(); roomIndex++) {
             Room room = board.getRoom(roomIndex);
 
-            if(room.getHasPlayerBeenHere()) {
+            if(room.hasPlayerBeenHere()) {
                 int[] roomCoordinates = room.getRoomCoordinates();
                 if(roomCoordinates[0] > mapSizeX) {
                     mapSizeX = roomCoordinates[0];
@@ -212,30 +204,30 @@ public class GameEngine {
      * Creates a map array based on the rooms player has been to
      * @return 2d String array containing a map of all the rooms player has been to
      */
-    private String[][] createMapArray(){
+    private char[][] createMapArray(){
         int[] mapDimensions = findMapDimensions();
-        String[][] mapArray = new String[mapDimensions[0]][mapDimensions[1]];
+        char[][] mapArray = new char[mapDimensions[0]][mapDimensions[1]];
+        char ROOM_MARKER = '1';
+        char NO_ROOM_MARKER = '0';
 
-        // Initialize mapArray with '0' denoting no room
-        for(String[] mapRow : mapArray){
-            Arrays.fill(mapRow, "0");
+        for(char[] mapRow : mapArray){
+            Arrays.fill(mapRow, NO_ROOM_MARKER);
         }
 
-        // populate map with rooms with '1' denoting a room
         for(int roomIndex = 0; roomIndex < board.getBoardSize(); roomIndex++) {
             Room room = board.getRoom(roomIndex);
 
-            if(room.getHasPlayerBeenHere()) {
+            if(room.hasPlayerBeenHere()) {
                 int x = room.getRoomCoordinates()[0] - 1;
                 int y = room.getRoomCoordinates()[1] - 1;
-                mapArray[x][y] = "1";
+                mapArray[x][y] = ROOM_MARKER;
             }
         }
 
         return mapArray;
     }
 
-    private static void printInputPrompt(){
+    private void printInputPrompt(){
         System.out.print("> ");
     }
 }

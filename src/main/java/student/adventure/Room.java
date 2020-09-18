@@ -10,11 +10,16 @@ public class Room {
     private ArrayList<String> unavailableItems;
     private String primaryDescription;
     private String secondaryDescription;
-    private Boolean hasPlayerBeenHere;
+    private boolean hasPlayerBeenHere;
 
-    public Room(int[] roomCoordinates, ArrayList<String> availableDoors, ArrayList<String> unavailableDoors,
-                ArrayList<String> availableItems, ArrayList<String> unavailableItems, String primaryDescription,
-                String secondaryDescription, Boolean hasPlayerBeenHere){
+    public Room(int[] roomCoordinates,
+                ArrayList<String> availableDoors,
+                ArrayList<String> unavailableDoors,
+                ArrayList<String> availableItems,
+                ArrayList<String> unavailableItems,
+                String primaryDescription,
+                String secondaryDescription,
+                boolean hasPlayerBeenHere){
         this.roomCoordinates = roomCoordinates;
         this.availableDoors = availableDoors;
         this.unavailableDoors = unavailableDoors;
@@ -53,6 +58,10 @@ public class Room {
         availableItems.add(item);
     }
 
+    public void removeItem(String item){
+        availableItems.remove(item);
+    }
+
     public ArrayList<String> getUnavailbleItems(){
         return unavailableItems;
     }
@@ -69,12 +78,12 @@ public class Room {
         return secondaryDescription;
     }
 
-    public Boolean getHasPlayerBeenHere(){
+    public Boolean hasPlayerBeenHere(){
         return hasPlayerBeenHere;
     }
 
-    public void setHasPlayerBeenHere(Boolean bool){
-        hasPlayerBeenHere = bool;
+    public void setHasPlayerBeenHere(boolean hasPlayerBeenHere){
+        this.hasPlayerBeenHere = hasPlayerBeenHere;
     }
 
     /**
@@ -98,7 +107,6 @@ public class Room {
         }
 
         System.out.println("Items: " + items.toString());
-        System.out.print("> ");
     }
 
 }

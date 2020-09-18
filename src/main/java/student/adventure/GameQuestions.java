@@ -3,7 +3,7 @@ package student.adventure;
 import java.util.List;
 
 public class GameQuestions {
-    List<Question> questions;
+    private List<Question> questions;
 
     public GameQuestions(List<Question> gameQuestions){
         this.questions = gameQuestions;
@@ -13,7 +13,7 @@ public class GameQuestions {
         return questions.get(i);
     }
 
-    public int listSize(){
+    public int getListSize(){
         return questions.size();
     }
 }

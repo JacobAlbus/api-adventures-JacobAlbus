@@ -6,22 +6,21 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Player {
     private int[] position = {1, 1};
+    private final List<String> directions = new ArrayList(Arrays.asList("east", "north", "west", "south"));
+    private final Map<String, int[]> roomsCoordinatesForItemUse;
     private ArrayList<String> items = new ArrayList<>();
     private String name;
     private GameBoard board;
     private GameQuestions questions;
 
     public Player(String playerName) throws IOException {
-        this.name = playerName;
-
         try {
             Gson gson = new Gson();
+
             Reader boardReader = Files.newBufferedReader(Paths.get("src/main/resources/Rooms.json"));
             Reader questionsReader = Files.newBufferedReader(
                     Paths.get("src/main/resources/GameQuestions.json"));
@@ -29,11 +28,20 @@ public class Player {
             questions = gson.fromJson(questionsReader, GameQuestions.class);
             board = gson.fromJson(boardReader, GameBoard.class);
             boardReader.close();
+            questionsReader.close();
         } catch (NullPointerException e) {
             throw new NullPointerException("The json file passed is null");
         } catch (IOException e) {
             throw new IOException("The specified file does not exist");
         }
+
+        roomsCoordinatesForItemUse = new HashMap<String, int[]>() {{
+            put("torch", board.getRoom(0).getRoomCoordinates());
+            put("key", board.getRoom(2).getRoomCoordinates());
+            put("calculator", board.getRoom(5).getRoomCoordinates());
+            put("lighter", board.getRoom(8).getRoomCoordinates());
+        }};
+        name = playerName;
     }
 
     public int[] getPosition(){
@@ -54,13 +62,12 @@ public class Player {
      * @param item given item that game checks is in room
      */
     public void takeItem(Room room, String item){
+        // make it so that getting and setting rooms variables is handled in room
         if(room.getAvailableItems().contains(item)){
             items.add(item);
-            room.getAvailableItems().remove(item);
-            checkInventory();
+            room.removeItem(item);
         } else{
             System.out.println("It seems like the room doesn't have that item");
-            printInputPrompt();
         }
     }
 
@@ -70,17 +77,15 @@ public class Player {
      * @param item given item that game checks is in player's inventory and not in room
      */
     public void dropItem(Room room, String item){
+        // make it so that getting and setting rooms variables is handled in room
         if(items.contains(item) && !room.getAvailableItems().contains(item)){
             items.remove(item);
             room.addAvailableItem(item);
-            checkInventory();
-            printInputPrompt();
+            printInventory();
         } else if(room.getAvailableItems().contains(item)){
             System.out.println("Can't drop the item, it's already in the room");
-            printInputPrompt();
         } else{
             System.out.println("It seems like you don't have that item");
-            printInputPrompt();
         }
 
     }
@@ -93,7 +98,7 @@ public class Player {
         if(items.contains(item)){
             switch(item){
                 case "torch":
-                    int[] torchCoords = board.getRoom(0).getRoomCoordinates();
+                    int[] torchCoords = roomsCoordinatesForItemUse.get("torch");
                     if(isRoomCorrectForItemUse(room, torchCoords)){
                         room.setPrimaryDescription(room.getSecondaryDescription());
                         room.addAvailableItem(room.getUnavailbleItems().get(0));
@@ -102,7 +107,7 @@ public class Player {
                     }
                     break;
                 case "key":
-                    int[] keyCoords = board.getRoom(2).getRoomCoordinates();
+                    int[] keyCoords = roomsCoordinatesForItemUse.get("key");
                     if(isRoomCorrectForItemUse(room, keyCoords)){
                         room.setPrimaryDescription(room.getSecondaryDescription());
                         room.addAvailableDoors(room.getUnavailableDoors().get(0));
@@ -112,7 +117,7 @@ public class Player {
                     }
                     break;
                 case "calculator":
-                    int[] calcCoords = board.getRoom(5).getRoomCoordinates();
+                    int[] calcCoords = roomsCoordinatesForItemUse.get("calculator");
                     if(isRoomCorrectForItemUse(room, calcCoords)){
                         if(didPlayerAceMathTest()){
                             room.setPrimaryDescription(room.getSecondaryDescription());
@@ -126,8 +131,9 @@ public class Player {
                     }
                     break;
                 case "lighter":
-                    int[] lighterCoords = board.getRoom(8).getRoomCoordinates();
+                    int[] lighterCoords = roomsCoordinatesForItemUse.get("lighter");
                     if(isRoomCorrectForItemUse(room, lighterCoords)){
+                        // make it so that getting and setting rooms variables is handled in room
                         room.setPrimaryDescription(room.getSecondaryDescription());
                         room.addAvailableDoors(room.getUnavailableDoors().get(0));
                         room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
@@ -137,13 +143,11 @@ public class Player {
                     break;
                 default:
                     System.out.println("Sorry but that item has no use");
-                    printInputPrompt();
                     break;
             }
 
         } else {
             System.out.println("You do not have this item");
-            printInputPrompt();
         }
     }
 
@@ -154,9 +158,7 @@ public class Player {
      * @param direction given direction user wants player to go
      */
     public Room updatePosition(Room room, String direction){
-        String[] directions = {"east", "north", "west", "south"};
-
-        if(Arrays.asList(directions).contains(direction) && room.getAvailableDoors().contains(direction)){
+        if(directions.contains(direction) && room.getAvailableDoors().contains(direction)){
             switch(direction){
                 case "east":
                     position[0] += 1;
@@ -173,7 +175,6 @@ public class Player {
             }
         } else{
             System.out.println("You cannot go in that direction");
-            printInputPrompt();
         }
         return board.findPlayerCurrentRoom(this);
     }
@@ -181,9 +182,8 @@ public class Player {
     /**
      * Prints out all the items currently in player's inventory
      */
-    public void checkInventory(){
+    public void printInventory(){
         System.out.println(name + "'s Inventory: " + items);
-        printInputPrompt();
     }
 
     /**
@@ -198,7 +198,6 @@ public class Player {
             isRoomCorrect = true;
         } else {
             System.out.println("It appears that the item has no use here");
-            printInputPrompt();
         }
 
         return isRoomCorrect;
@@ -210,15 +209,16 @@ public class Player {
      */
     private boolean didPlayerAceMathTest(){
         int numCorrect = 0;
+        int passingGrade = 4;
 
         System.out.println("You have begun the eternal math test, pick your answers wisely!");
 
-        for(int index = 0; index < questions.listSize(); index++){
+        for(int index = 0; index < questions.getListSize(); index++){
             Question question = questions.getGameQuestions(index);
-            numCorrect += this.mathQuestion(question.getQuestion(), question.getAnswer());
+            numCorrect += this.askMathQuestion(question.getQuestion(), question.getAnswer());
         }
 
-        if(numCorrect >= 4){
+        if(numCorrect >= passingGrade){
             System.out.println("Congratulations, you have passed the test");
             return true;
         } else {
@@ -235,9 +235,10 @@ public class Player {
      * @param correctAnswer correct answer to question
      * @return 1 if player is right, 0 otherwise
      */
-    public int mathQuestion(String question, String correctAnswer){
+    // ask elizabeth about configuring this function for booleans
+    public int askMathQuestion(String question, String correctAnswer){
         System.out.println(question);
-        printInputPrompt();
+        System.out.print("> ");
 
         Scanner playerInput = new Scanner(System.in);
         String playerAnswer = playerInput.nextLine();
@@ -252,7 +253,4 @@ public class Player {
 
     }
 
-    private void printInputPrompt(){
-        System.out.print("> ");
-    }
 }

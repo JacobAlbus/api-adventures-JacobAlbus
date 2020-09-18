@@ -9,9 +9,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class EngineTest {
-    GameEngine engine;
-    Player player;
-    GameBoard board;
+    private GameEngine engine;
+    private Player player;
+    private GameBoard board;
 
     @Before
     public void setUp() throws IOException {
@@ -20,10 +20,11 @@ public class EngineTest {
         board = engine.board;
     }
 
+    // add tests for 'valid' jsons
     @Test
     public void testReadInJsonNullFile() throws IOException {
         try {
-            new GameEngine("src/main/resources/RoomsNull.json", "bob");
+            new GameEngine("src/test/resources/RoomsNull.json", "bob");
         } catch (NullPointerException e) {
             assertEquals(e.getMessage(), "The json file passed is null");
         }
@@ -32,7 +33,7 @@ public class EngineTest {
     @Test
     public void testReadInJsonFileNotFound(){
         try {
-            new GameEngine("src/main/resources/R.json", "bob");
+            new GameEngine("src/test/resources/R.json", "bob");
         } catch (IOException e) {
             assertEquals(e.getMessage(), "The specified file does not exist");
         }
@@ -191,7 +192,7 @@ public class EngineTest {
             PrintStream old = System.out;
             System.setOut(ps);
 
-            GameEngine testEngine = new GameEngine("src/main/resources/RoomsInvalidTesting.json",
+            GameEngine testEngine = new GameEngine("src/test/resources/RoomsInvalidTesting.json",
                                                       "bob");
             Player testPlayer = testEngine.player;
             GameBoard testBoard = testEngine.board;
@@ -241,9 +242,8 @@ public class EngineTest {
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[1];
-        printedString = printedString.replace("\r", "").replace("\n", "");
-        assertEquals(" 11", printedString);
+        String printedString = baos.toString().replace("\r\n", "");
+        assertEquals("You cannot go in that direction11\n", printedString);
     }
 
     @Test
@@ -275,11 +275,11 @@ public class EngineTest {
         player.updatePosition(board.getRoom(9), "south");
         engine.processInputs(board.findPlayerCurrentRoom(player), "examine", "");
 
-        engine.gameLoop();
+        engine.playGame();
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString().split(">")[9];
+        String printedString = baos.toString().split(">")[1];
         assertEquals(" You win! Play again to venture back into your dorm\r\n", printedString);
 
     }
