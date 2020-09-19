@@ -17,11 +17,12 @@ public class Player {
     private GameBoard board;
     private GameQuestions questions;
 
-    public Player(String playerName) throws IOException {
+    public Player(String boardFilePath, String playerName) throws IOException {
+        Map<String, int[]> roomsCoordinatesForItemUse1;
         try {
             Gson gson = new Gson();
 
-            Reader boardReader = Files.newBufferedReader(Paths.get("src/main/resources/Rooms.json"));
+            Reader boardReader = Files.newBufferedReader(Paths.get(boardFilePath));
             Reader questionsReader = Files.newBufferedReader(
                     Paths.get("src/main/resources/GameQuestions.json"));
 
@@ -35,12 +36,20 @@ public class Player {
             throw new IOException("The specified file does not exist");
         }
 
-        roomsCoordinatesForItemUse = new HashMap<String, int[]>() {{
-            put("torch", board.getRoom(0).getRoomCoordinates());
-            put("key", board.getRoom(2).getRoomCoordinates());
-            put("calculator", board.getRoom(5).getRoomCoordinates());
-            put("lighter", board.getRoom(8).getRoomCoordinates());
-        }};
+        try{
+            roomsCoordinatesForItemUse1 = new HashMap<String, int[]>() {{
+                put("torch", board.getRoom(0).getRoomCoordinates());
+                put("key", board.getRoom(2).getRoomCoordinates());
+                put("calculator", board.getRoom(5).getRoomCoordinates());
+                put("lighter", board.getRoom(8).getRoomCoordinates());
+            }};
+        } catch (IndexOutOfBoundsException e){
+            roomsCoordinatesForItemUse1 = new HashMap<String, int[]>() {{
+                put("torch", board.getRoom(0).getRoomCoordinates());
+            }};
+        }
+
+        roomsCoordinatesForItemUse = roomsCoordinatesForItemUse1;
         name = playerName;
     }
 

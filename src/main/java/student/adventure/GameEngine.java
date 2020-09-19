@@ -1,6 +1,8 @@
 package student.adventure;
 
 import com.google.gson.Gson;
+import student.server.AdventureState;
+import student.server.GameStatus;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -9,8 +11,10 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class GameEngine {
-    GameBoard board;
-    Player player;
+    private GameBoard board;
+    private Player player;
+    private Room room;
+    private GameStatus status;
     private final List<String> actions = new ArrayList<>(Arrays.asList("use", "take", "drop", "go", "check",
                                                                        "examine", "help", "map", "exit", "quit"));
     private final Scanner userInput = new Scanner(System.in);
@@ -19,8 +23,6 @@ public class GameEngine {
      * Initializes Player and GameBoard object
      */
     public GameEngine(String filePath, String name) throws IOException {
-        player = new Player(name);
-
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(filePath));
@@ -33,27 +35,19 @@ public class GameEngine {
         } catch (IOException e) {
             throw new IOException("The specified file does not exist");
         }
+
+        player = new Player(filePath, name);
+        room = board.findPlayerCurrentRoom(player);
     }
 
     /**
      * Contains main loop for game: explore a mysterious dungeon and solve puzzles to escape!
      */
     public void playGame(){
-        int winRoomIndex = 10;
-        int[] winRoom = board.getRoom(winRoomIndex).getRoomCoordinates();
-        Room room = board.findPlayerCurrentRoom(player);
         room.printRoomMessage();
 
         while(true){
             printInputPrompt();
-            room = board.findPlayerCurrentRoom(player);
-
-            // Message for when player enters the final/winners Room
-            if(Arrays.equals(room.getRoomCoordinates(), winRoom)){
-                System.out.println("You win! Play again to venture back into your dorm");
-                break;
-            }
-
             List<String>  inputs = filterInputs();
             String  action = inputs.get(0);
             String  noun = inputs.get(1);
@@ -62,7 +56,7 @@ public class GameEngine {
                 break;
             }
 
-            processInputs(room, action, noun);
+            processInputs(action, noun);
         }
     }
 
@@ -102,11 +96,13 @@ public class GameEngine {
 
     /**
      * Given valid inputs, executes method corresponding to some action
-     * @param room the Room object player is currently in
      * @param action command for the player (use, go, examine, take, check etc.)
      * @param noun object or thing the player interacts with (usually an item or direction)
      */
-    public void processInputs(Room room, String action, String noun){
+    public void processInputs(String action, String noun){
+        // is this breaking encapsulation?
+        room = board.findPlayerCurrentRoom(player);
+        updateGameStatus();
         // ask elizabeth about magic strings
         switch(action){
             case "examine":
@@ -123,9 +119,17 @@ public class GameEngine {
                 player.useItem(room, noun);
                 break;
             case "go":
+                int winRoomIndex = 10;
+                int[] winRoom = board.getRoom(winRoomIndex).getRoomCoordinates();
                 Room updatedRoom = player.updatePosition(room, noun);
+
                 if(!Arrays.equals(room.getRoomCoordinates(), updatedRoom.getRoomCoordinates())){
-                    updatedRoom.printRoomMessage();
+                    System.out.println(Arrays.toString(updatedRoom.getRoomCoordinates()));
+                }
+                // should this be own method?
+                if(Arrays.equals(updatedRoom.getRoomCoordinates(), winRoom)){
+                    System.out.println("You win! Play again to venture back into your dorm");
+                    System.exit(0);
                 }
                 break;
             case "check":
@@ -172,6 +176,34 @@ public class GameEngine {
                 "Input examine to see room information \n" +
                 "Input check to see all items currently in inventory \n" +
                 "Input exit or quit to stop playing Adventure");
+    }
+
+    public GameStatus getStatus(){
+        return status;
+    }
+
+    /**
+     * Updates contents of GameStatus to match with player's current room
+     */
+    private void updateGameStatus(){
+        boolean error = false;
+        int id = 1;
+        String message = room.getPrimaryDescription();
+        String imageUrl = room.getImageUrl();
+        String videoUrl = room.getVideoUrl();
+        AdventureState state = new AdventureState();
+        HashMap<String, List<String>> commandOptions = new HashMap<String, List<String>>() {{
+            put("go", room.getAvailableDoors());
+            put("take", room.getAvailableItems());
+            put("use", player.getItems());
+            put("drop", player.getItems());
+            put("examine", null);
+            put("check", null);
+            put("help", null);
+            put("map", null);
+        }};
+
+        status = new GameStatus(error, id, message, imageUrl, videoUrl, state, commandOptions);
     }
 
     /**

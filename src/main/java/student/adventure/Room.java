@@ -10,6 +10,8 @@ public class Room {
     private ArrayList<String> unavailableItems;
     private String primaryDescription;
     private String secondaryDescription;
+    private String imageUrl;
+    private String videoUrl;
     private boolean hasPlayerBeenHere;
 
     public Room(int[] roomCoordinates,
@@ -19,6 +21,8 @@ public class Room {
                 ArrayList<String> unavailableItems,
                 String primaryDescription,
                 String secondaryDescription,
+                String imageUrl,
+                String videoUrl,
                 boolean hasPlayerBeenHere){
         this.roomCoordinates = roomCoordinates;
         this.availableDoors = availableDoors;
@@ -27,6 +31,8 @@ public class Room {
         this.unavailableItems = unavailableItems;
         this.primaryDescription = primaryDescription;
         this.secondaryDescription = secondaryDescription;
+        this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
         this.hasPlayerBeenHere = hasPlayerBeenHere;
     }
 
@@ -77,6 +83,10 @@ public class Room {
     public String getSecondaryDescription(){
         return secondaryDescription;
     }
+
+    public String getImageUrl() { return imageUrl; }
+
+    public String getVideoUrl() { return videoUrl; }
 
     public Boolean hasPlayerBeenHere(){
         return hasPlayerBeenHere;

@@ -8,35 +8,49 @@ import java.util.Map;
 import java.util.SortedMap;
 
 public class GameAdventureService implements AdventureService{
-    Map<Integer, GameEngine> allGames = new HashMap<>();
-    int currentGameID = 0;
+    private Map<Integer, GameEngine> allGames = new HashMap<>();
+    private int currentGameID = 0;
 
     @Override
     public void reset() {
-
+        allGames = new HashMap<>();
+        currentGameID = 0;
     }
 
     @Override
     public int newGame() throws AdventureException, IOException {
-//        GameEngine newGame = new GameEngine();
-//        allGames.put(currentGameID, newGame);
+        currentGameID++;
+        GameEngine newGame = new GameEngine("src/main/resources/Rooms.json", "bob");
+        allGames.put(currentGameID, newGame);
 
         return currentGameID;
     }
 
     @Override
     public GameStatus getGame(int id) {
-        return null;
+        try{
+            GameEngine engine = allGames.get(id);
+            return engine.getStatus();
+        } catch (NullPointerException e){
+            return null;
+        }
     }
 
     @Override
     public boolean destroyGame(int id) {
-        return false;
+        try{
+            allGames.remove(id);
+            return true;
+        } catch(NullPointerException e){
+            return false;
+        }
     }
 
     @Override
     public void executeCommand(int id, Command command) {
-
+        String action = command.getCommandName();
+        String noun = command.getCommandValue();
+        allGames.get(id).processInputs(action, noun);
     }
 
     @Override

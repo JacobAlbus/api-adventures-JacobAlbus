@@ -7,7 +7,9 @@
     "unavailableItems" : ["key"],
     "primaryDescription" : "You're in a dark room with one visible door.",
     "secondaryDescription" : "After using the torch, you see a sparkle in one of the cracks. After investigating, you see a key",
-    "hasPlayerBeenHere": true
+    "hasPlayerBeenHere": true,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" :  [2, 1],
@@ -17,7 +19,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "This room doesn't look too different than the last",
     "secondaryDescription" : "The room is now lit up, and you hear all sorts of bugs and critters scatter into the cracks",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [2, 2],
@@ -27,7 +31,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "There's a door at the north end of the room, but it's locked.",
     "secondaryDescription" : "The door at the north end opened!",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [2, 3],
@@ -37,7 +43,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "There are four different doors, pick your path wisely",
     "secondaryDescription" : "",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [1, 3],
@@ -47,17 +55,21 @@
     "unavailableItems" : [""],
     "primaryDescription" : "Doesn't seem to be anything in here, probably a dead end",
     "secondaryDescription" : "",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [3, 3],
-    "availableDoors" : ["west"],
-    "unavailableDoors" :  ["east"],
+    "availableDoors" : ["west", "east"],
+    "unavailableDoors" :  [""],
     "availableItems" :  [""],
     "unavailableItems" : [""],
     "primaryDescription" : "There's a locked door with some ancient symbol: 'Requires TI-84' ",
     "secondaryDescription" : "Wow, that test was hard, but the door opened!",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [2, 4],
@@ -67,7 +79,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "Doesn't seem to be too much in this room, except a small computational device",
     "secondaryDescription" : "",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [4, 3],
@@ -77,7 +91,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "There's sun light coming from the cracks in the room, you're getting close to the exit",
     "secondaryDescription" : "",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [5, 3],
@@ -87,7 +103,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "It smells of rotten eggs in this room, and there's a big steel door to the south",
     "secondaryDescription" : "WOW, the smell of rotten eggs was actually a gas leak and the lighter caused the room to combust. The south door was blown down",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [5, 2],
@@ -97,7 +115,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "The exit is right there at the other end...MAKE A RUN FOR IT!!!",
     "secondaryDescription" : "",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   },
   {
     "roomCoordinates" : [5, 1],
@@ -107,7 +127,9 @@
     "unavailableItems" : [""],
     "primaryDescription" : "You emerge in the dormitory hallway, you look back and see your room number on the wall. Maybe it's time for spring cleaning?",
     "secondaryDescription" : "",
-    "hasPlayerBeenHere": false
+    "hasPlayerBeenHere": false,
+    "imageUrl": "https://vignette.wikia.nocookie.net/minecraft/images/3/3c/NewDungeon1.9.png/revision/latest?cb=20120226014149",
+    "videoUrl": "https://www.youtube.com/watch?v=IiJZkpEuecc&ab_channel=WbMystery"
   }
 ]
 }

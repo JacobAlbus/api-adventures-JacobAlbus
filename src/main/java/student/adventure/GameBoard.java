@@ -1,7 +1,12 @@
 package student.adventure;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import student.server.AdventureState;
+import student.server.GameStatus;
 
 public class GameBoard {
     private List<Room> rooms;
@@ -37,4 +42,5 @@ public class GameBoard {
         player.setPosition(rooms.get(0).getRoomCoordinates());
         return rooms.get(0);
     }
+
 }
