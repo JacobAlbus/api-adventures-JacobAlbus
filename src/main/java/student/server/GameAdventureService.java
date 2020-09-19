@@ -3,13 +3,22 @@ package student.server;
 import student.adventure.GameEngine;
 
 import java.io.IOException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 
 public class GameAdventureService implements AdventureService{
-    private Map<Integer, GameEngine> allGames = new HashMap<>();
+    private final static String DATABASE_URL = "jdbc:sqlite:src/main/resources/adventure.db";
+    private final Connection dbConnection;
+    private Map<Integer, GameEngine> allGames;
     private int currentGameID = 0;
+
+    public GameAdventureService() throws SQLException {
+        dbConnection = DriverManager.getConnection(DATABASE_URL);
+        currentGameID = 0;
+        allGames = new HashMap<>();
+    }
 
     @Override
     public void reset() {
@@ -17,12 +26,18 @@ public class GameAdventureService implements AdventureService{
         currentGameID = 0;
     }
 
+    /**
+     * Creates a new game instance then adds it to a HashMap for later use
+     * @return int indicating ID for created game
+     * @throws IOException thrown if specified json does not exist
+     */
     @Override
-    public int newGame() throws AdventureException, IOException {
+    public int newGame() throws IOException {
         currentGameID++;
-        GameEngine newGame = new GameEngine("src/main/resources/Rooms.json", "bob");
+        GameEngine newGame = new GameEngine("src/main/resources/Rooms.json", "bob", currentGameID);
         allGames.put(currentGameID, newGame);
-
+        System.out.println(currentGameID);
+        System.out.println(allGames.size());
         return currentGameID;
     }
 
@@ -54,7 +69,15 @@ public class GameAdventureService implements AdventureService{
     }
 
     @Override
-    public SortedMap<String, Integer> fetchLeaderboard() {
+    public SortedMap<String, Integer> fetchLeaderboard() throws SQLException {
+        Statement stmt = dbConnection.createStatement();
+        ResultSet results;
+        if (stmt.execute("SELECT * FROM leaderboard_albus2")) {
+            results = stmt.getResultSet();
+            System.out.println(results.first());
+        } else {
+            return null;
+        }
         return null;
     }
 }

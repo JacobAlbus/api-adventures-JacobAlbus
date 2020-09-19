@@ -110,13 +110,18 @@ public class Room {
 
         System.out.println("Direction: " + doors.toString());
 
+
         StringBuilder items = new StringBuilder();
+        String fillerSpace = " ";
         for(String item: availableItems){
             items.append(item);
-            items.append(" ");
+            items.append(fillerSpace);
         }
 
-        System.out.println("Items: " + items.toString());
+        if(!items.toString().equals(fillerSpace) && availableItems.size() != 0){
+            System.out.println("Items: " + items.toString());
+        }
+
     }
 
 }

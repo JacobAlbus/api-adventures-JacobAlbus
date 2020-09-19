@@ -15,14 +15,14 @@ public class EngineTest {
 
     @Before
     public void setUp() throws IOException {
-        engine = new GameEngine("src/main/resources/Rooms.json", "bob");
+        engine = new GameEngine("src/main/resources/Rooms.json", "bob", 0);
     }
 
     // add tests for 'valid' jsons
 
     public void testReadInJsonNullFile() throws IOException {
         try {
-            new GameEngine("src/test/resources/RoomsNull.json", "bob");
+            new GameEngine("src/test/resources/RoomsNull.json", "bob", 0);
         } catch (NullPointerException e) {
             assertEquals("The json file passed is null", e.getMessage());
         }
@@ -31,7 +31,7 @@ public class EngineTest {
     @Test
     public void testReadInJsonFileNotFound(){
         try {
-            new GameEngine("src/test/resources/R.json", "bob");
+            new GameEngine("src/test/resources/R.json", "bob", 0);
         } catch (IOException e) {
             assertEquals("The specified file does not exist", e.getMessage());
         }

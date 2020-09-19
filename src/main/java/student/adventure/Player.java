@@ -74,7 +74,7 @@ public class Player {
         // make it so that getting and setting rooms variables is handled in room
         if(room.getAvailableItems().contains(item)){
             items.add(item);
-            room.removeItem(item);
+            room.getAvailableItems().remove(item);
         } else{
             System.out.println("It seems like the room doesn't have that item");
         }
@@ -166,26 +166,26 @@ public class Player {
      * @param room Room object player is currently in
      * @param direction given direction user wants player to go
      */
-    public Room updatePosition(Room room, String direction){
+    public int[] updatePosition(Room room, String direction){
         if(directions.contains(direction) && room.getAvailableDoors().contains(direction)){
             switch(direction){
                 case "east":
                     position[0] += 1;
-                    return board.findPlayerCurrentRoom(this);
+                    break;
                 case "north":
                     position[1] += 1;
-                    return board.findPlayerCurrentRoom(this);
+                    break;
                 case "west":
                     position[0] -= 1;
-                    return board.findPlayerCurrentRoom(this);
+                    break;
                 case "south":
                     position[1] -= 1;
-                    return board.findPlayerCurrentRoom(this);
+                    break;
             }
         } else{
             System.out.println("You cannot go in that direction");
         }
-        return board.findPlayerCurrentRoom(this);
+        return board.findPlayerCurrentRoom(this).getRoomCoordinates();
     }
 
     /**

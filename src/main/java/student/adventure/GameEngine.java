@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class GameEngine {
+    private boolean isPlayerInWinRoom = false;
+    private int currentGameID;
     private GameBoard board;
     private Player player;
     private Room room;
@@ -22,22 +24,24 @@ public class GameEngine {
     /**
      * Initializes Player and GameBoard object
      */
-    public GameEngine(String filePath, String name) throws IOException {
+    public GameEngine(String filePath, String name, int gameID) throws IOException {
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(filePath));
 
             board = gson.fromJson(reader, GameBoard.class);
             reader.close();
-            // ask elizabeth why we don't want to throw an exception
+            // TODO ask elizabeth why we don't want to throw an exception
         } catch (NullPointerException e) {
             throw new NullPointerException("The json file passed is null");
         } catch (IOException e) {
             throw new IOException("The specified file does not exist");
         }
 
+        currentGameID = gameID;
         player = new Player(filePath, name);
         room = board.findPlayerCurrentRoom(player);
+        updateGameStatus();
     }
 
     /**
@@ -46,7 +50,7 @@ public class GameEngine {
     public void playGame(){
         room.printRoomMessage();
 
-        while(true){
+        while(!isPlayerInWinRoom){
             printInputPrompt();
             List<String>  inputs = filterInputs();
             String  action = inputs.get(0);
@@ -100,49 +104,48 @@ public class GameEngine {
      * @param noun object or thing the player interacts with (usually an item or direction)
      */
     public void processInputs(String action, String noun){
-        // is this breaking encapsulation?
-        room = board.findPlayerCurrentRoom(player);
-        updateGameStatus();
-        // ask elizabeth about magic strings
-        switch(action){
-            case "examine":
-                room.printRoomMessage();
-                break;
-            case "take":
-                player.takeItem(room, noun);
-                player.printInventory();
-                break;
-            case "drop":
-                player.dropItem(room, noun);
-                break;
-            case "use":
-                player.useItem(room, noun);
-                break;
-            case "go":
-                int winRoomIndex = 10;
-                int[] winRoom = board.getRoom(winRoomIndex).getRoomCoordinates();
-                Room updatedRoom = player.updatePosition(room, noun);
+        while(!isPlayerInWinRoom) {
+            // TODO ask elizabeth about magic strings
+            switch(action) {
+                case "examine":
+                    room.printRoomMessage();
+                    break;
+                case "take":
+                    player.takeItem(room, noun);
+                    player.printInventory();
+                    break;
+                case "drop":
+                    player.dropItem(room, noun);
+                    break;
+                case "use":
+                    player.useItem(room, noun);
+                    break;
+                case "go":
+                    int[] updatedRoomCoords = player.updatePosition(room, noun);
+                    checkPlayerInWinRoom(updatedRoomCoords);
 
-                if(!Arrays.equals(room.getRoomCoordinates(), updatedRoom.getRoomCoordinates())){
-                    System.out.println(Arrays.toString(updatedRoom.getRoomCoordinates()));
-                }
-                // should this be own method?
-                if(Arrays.equals(updatedRoom.getRoomCoordinates(), winRoom)){
-                    System.out.println("You win! Play again to venture back into your dorm");
-                    System.exit(0);
-                }
-                break;
-            case "check":
-                player.printInventory();
-                break;
-            case "map":
-                printOutMap();
-                break;
-            case "help":
-                printHelpCommands();
-                break;
-            default:
-                System.out.println("I couldn't understand that command. Input 'help' to see list of commands");
+                    if(!Arrays.equals(room.getRoomCoordinates(), updatedRoomCoords) && !isPlayerInWinRoom) {
+                        room = board.findPlayerCurrentRoom(player);
+                        room.printRoomMessage();
+                    }
+
+                    break;
+                case "check":
+                    player.printInventory();
+                    break;
+                case "map":
+                    printOutMap();
+                    break;
+                case "help":
+                    printHelpCommands();
+                    break;
+                default:
+                    System.out.println("I couldn't understand that command. Input 'help' to see list of commands");
+            }
+            //TODO is this breaking encapsulation?
+            room = board.findPlayerCurrentRoom(player);
+            updateGameStatus();
+            break;
         }
     }
 
@@ -183,25 +186,43 @@ public class GameEngine {
     }
 
     /**
+     * Checks if player's updated Room is win room
+     * @param updatedRoomCoords coords of player's room after attempting to "go" between rooms
+     */
+    private void checkPlayerInWinRoom(int[] updatedRoomCoords){
+        int winRoomIndex = 10;
+        int[] winRoom = board.getRoom(winRoomIndex).getRoomCoordinates();
+        if(Arrays.equals(updatedRoomCoords, winRoom)) {
+            room = board.findPlayerCurrentRoom(player);
+            room.setPrimaryDescription(room.getSecondaryDescription());
+            room.printRoomMessage();
+            isPlayerInWinRoom = true;
+        }
+    }
+
+    /**
      * Updates contents of GameStatus to match with player's current room
      */
     private void updateGameStatus(){
         boolean error = false;
-        int id = 1;
+        int id = currentGameID;
         String message = room.getPrimaryDescription();
         String imageUrl = room.getImageUrl();
         String videoUrl = room.getVideoUrl();
         AdventureState state = new AdventureState();
+        List<String> emptyList = new ArrayList<>(Arrays.asList(""));
         HashMap<String, List<String>> commandOptions = new HashMap<String, List<String>>() {{
             put("go", room.getAvailableDoors());
-            put("take", room.getAvailableItems());
-            put("use", player.getItems());
-            put("drop", player.getItems());
-            put("examine", null);
-            put("check", null);
-            put("help", null);
-            put("map", null);
+            put("map", emptyList);
         }};
+
+        if(room.getAvailableItems().size() != 0){
+            commandOptions.put("take", room.getAvailableItems());
+        }
+        if(player.getItems().size() != 0){
+            commandOptions.put("use", player.getItems());
+            commandOptions.put("drop", player.getItems());
+        }
 
         status = new GameStatus(error, id, message, imageUrl, videoUrl, state, commandOptions);
     }
