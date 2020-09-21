@@ -4,19 +4,27 @@ import com.google.gson.Gson;
 import student.server.AdventureState;
 import student.server.GameStatus;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
+
 public class GameEngine {
     private boolean isPlayerInWinRoom = false;
-    private int currentGameID;
+    private int gameID;
+    private String playerMessage;
+    private int gameScore = 1000000;
+    private boolean useUI;
     private GameBoard board;
     private Player player;
     private Room room;
     private GameStatus status;
+    private GameQuestions questions;
     private final List<String> actions = new ArrayList<>(Arrays.asList("use", "take", "drop", "go", "check",
                                                                        "examine", "help", "map", "exit", "quit"));
     private final Scanner userInput = new Scanner(System.in);
@@ -24,11 +32,14 @@ public class GameEngine {
     /**
      * Initializes Player and GameBoard object
      */
-    public GameEngine(String filePath, String name, int gameID) throws IOException {
+    public GameEngine(String filePath, String name, int gameID, boolean useUI) throws IOException {
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(filePath));
+            Reader questionsReader = Files.newBufferedReader(
+                    Paths.get("src/main/resources/GameQuestions.json"));
 
+            questions = gson.fromJson(questionsReader, GameQuestions.class);
             board = gson.fromJson(reader, GameBoard.class);
             reader.close();
             // TODO ask elizabeth why we don't want to throw an exception
@@ -38,10 +49,15 @@ public class GameEngine {
             throw new IOException("The specified file does not exist");
         }
 
-        currentGameID = gameID;
+        this.gameID = gameID;
+        this.useUI = useUI;
         player = new Player(filePath, name);
         room = board.findPlayerCurrentRoom(player);
         updateGameStatus();
+    }
+
+    public GameStatus getStatus(){
+        return status;
     }
 
     /**
@@ -89,11 +105,7 @@ public class GameEngine {
             }
         }
 
-        if(actions.contains(action)){
-            Collections.addAll(filteredInputs, action, noun.toString());
-        } else{
-            return null;
-        }
+        Collections.addAll(filteredInputs, action, noun.toString());
 
         return filteredInputs;
     }
@@ -108,19 +120,24 @@ public class GameEngine {
             // TODO ask elizabeth about magic strings
             switch(action) {
                 case "examine":
+                    deductGameScore();
                     room.printRoomMessage();
                     break;
                 case "take":
+                    deductGameScore();
                     player.takeItem(room, noun);
                     player.printInventory();
                     break;
                 case "drop":
-                    player.dropItem(room, noun);
+                    deductGameScore();
+                    playerMessage = player.dropItem(room, noun);
                     break;
                 case "use":
-                    player.useItem(room, noun);
+                    deductGameScore();
+                    playerMessage = player.useItem(room, noun, useUI);
                     break;
                 case "go":
+                    deductGameScore();
                     int[] updatedRoomCoords = player.updatePosition(room, noun);
                     checkPlayerInWinRoom(updatedRoomCoords);
 
@@ -130,13 +147,23 @@ public class GameEngine {
                     }
 
                     break;
+                case "answer":
+                    if(player.isTesting()){
+                        playerMessage = questions.askMathQuestionUI(room, player, noun);
+                    } else {
+                        System.out.println("I couldn't understand that command. Input 'help' to see list of commands");
+                    }
+                    break;
                 case "check":
+                    deductGameScore();
                     player.printInventory();
                     break;
                 case "map":
-                    printOutMap();
+                    deductGameScore();
+                    System.out.println(createPrintedMap());
                     break;
                 case "help":
+                    deductGameScore();
                     printHelpCommands();
                     break;
                 default:
@@ -152,7 +179,7 @@ public class GameEngine {
     /**
      * Prints out a map of all rooms player has been in
      */
-    public void printOutMap(){
+    public String createPrintedMap(){
         char[][] mapOfRoomsVisited = createMapArray();
 
         // Converts 2d String array into a single String
@@ -162,10 +189,10 @@ public class GameEngine {
             for(int rowIndex = 0; rowIndex < mapOfRoomsVisited.length; rowIndex++){
                 printedMap.append(mapOfRoomsVisited[rowIndex][columnIndex]);
             }
-            printedMap.append("\n");
+            printedMap.append("\r\n");
         }
 
-        System.out.println(printedMap);
+        return printedMap.toString();
     }
 
     /**
@@ -179,10 +206,6 @@ public class GameEngine {
                 "Input examine to see room information \n" +
                 "Input check to see all items currently in inventory \n" +
                 "Input exit or quit to stop playing Adventure");
-    }
-
-    public GameStatus getStatus(){
-        return status;
     }
 
     /**
@@ -205,26 +228,37 @@ public class GameEngine {
      */
     private void updateGameStatus(){
         boolean error = false;
-        int id = currentGameID;
+        int id = gameID;
         String message = room.getPrimaryDescription();
         String imageUrl = room.getImageUrl();
         String videoUrl = room.getVideoUrl();
-        AdventureState state = new AdventureState();
-        List<String> emptyList = new ArrayList<>(Arrays.asList(""));
-        HashMap<String, List<String>> commandOptions = new HashMap<String, List<String>>() {{
-            put("go", room.getAvailableDoors());
-            put("map", emptyList);
-        }};
+        AdventureState state = new AdventureState(createPrintedMap(), gameScore, "", playerMessage);
+        HashMap<String, List<String>> commandOptions = new HashMap();
 
-        if(room.getAvailableItems().size() != 0){
-            commandOptions.put("take", room.getAvailableItems());
-        }
-        if(player.getItems().size() != 0){
-            commandOptions.put("use", player.getItems());
-            commandOptions.put("drop", player.getItems());
+        if(player.isTesting()){
+            int index = questions.getCurrentQuestionIndex();
+            Question currentQuestion = questions.getGameQuestions(index);
+
+            ArrayList<String> playerAnswers = currentQuestion.getPlayerAnswers();
+            commandOptions.put("answer", playerAnswers);
+            state = new AdventureState(createPrintedMap(), gameScore, currentQuestion.getQuestion(), playerMessage);
+        } else {
+            commandOptions.put("go", room.getAvailableDoors());
+            if(room.getAvailableItems().size() != 0){
+                commandOptions.put("take", room.getAvailableItems());
+            }
+            if(player.getItems().size() != 0){
+                commandOptions.put("use", player.getItems());
+                commandOptions.put("drop", player.getItems());
+            }
         }
 
         status = new GameStatus(error, id, message, imageUrl, videoUrl, state, commandOptions);
+    }
+
+    private void deductGameScore(){
+        int scoreDeduction = 10000;
+        gameScore -= scoreDeduction;
     }
 
     /**

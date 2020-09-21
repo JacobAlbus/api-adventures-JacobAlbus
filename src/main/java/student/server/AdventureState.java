@@ -16,9 +16,31 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize
 public class AdventureState {
-    // TODO: Add any additional state your game needs to this object.
+    private String map;
+    private int gameScore;
+    private String currentQuestion;
+    private String playerMessage;
 
-    public AdventureState(){
+    public AdventureState(String map, int gameScore, String currentQuestion, String playerMessage){
+        this.map = map;
+        this.gameScore = gameScore;
+        this.currentQuestion = currentQuestion;
+        this.playerMessage = playerMessage;
+    }
 
+    public String getMap(){
+        return map;
+    }
+
+    public int getGameScore(){
+        return gameScore;
+    }
+
+    public String getCurrentQuestion(){
+        return currentQuestion;
+    }
+
+    public String getPlayerMessage() {
+        return playerMessage;
     }
 }

@@ -1,23 +1,28 @@
 { "questions": [
   {
     "question" : "What is the product of the squares of four and two",
-    "answer" : "64"
+    "correctAnswer" : "64",
+    "playerAnswers": ["16", "81", "64", "128"]
   },
   {
     "question" :"Give me pi to the first 3 digits",
-    "answer" : "3.14"
+    "correctAnswer" : "3.14",
+    "playerAnswers": ["420", "3.14", "2.78", "42"]
   },
   {
     "question" : "What is the standard representation for the square root of negative one",
-    "answer" : "i"
+    "correctAnswer" : "i",
+    "playerAnswers": ["cow", "i", "2", "42"]
   },
   {
     "question" : "What is the cube of the sixth element in the set of all natural numbers",
-    "answer" : "216"
+    "correctAnswer" : "216",
+    "playerAnswers": ["8", "1024", "216", "-20"]
   },
   {
     "question" : "What is the factorial of 0",
-    "answer" : "1"
+    "correctAnswer" : "1",
+    "playerAnswers": ["-0", "-1", "0", "1"]
   }
 
 ]

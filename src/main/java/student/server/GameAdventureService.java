@@ -34,7 +34,10 @@ public class GameAdventureService implements AdventureService{
     @Override
     public int newGame() throws IOException {
         currentGameID++;
-        GameEngine newGame = new GameEngine("src/main/resources/Rooms.json", "bob", currentGameID);
+        GameEngine newGame = new GameEngine("src/main/resources/Rooms.json",
+                                             "bob",
+                                                    currentGameID,
+                                              true);
         allGames.put(currentGameID, newGame);
         System.out.println(currentGameID);
         System.out.println(allGames.size());

@@ -213,7 +213,7 @@ public class PlayerTests {
         PrintStream old = System.out;
 
         System.setOut(ps);
-        player.useItem(board.getRoom(0), "torch");
+        player.useItem(board.getRoom(0), "torch", false);
 
         System.out.flush();
         System.setOut(old);
@@ -231,7 +231,7 @@ public class PlayerTests {
         System.setOut(ps);
 
         player.takeItem(board.getRoom(1), "torch");
-        player.useItem(board.getRoom(1), "torch");
+        player.useItem(board.getRoom(1), "torch", false);
 
         System.out.flush();
         System.setOut(old);
@@ -249,7 +249,7 @@ public class PlayerTests {
         System.setOut(ps);
 
         player.takeItem(board.getRoom(4), "knife");
-        player.useItem(board.getRoom(4), "knife");
+        player.useItem(board.getRoom(4), "knife", false);
 
         System.out.flush();
         System.setOut(old);
@@ -261,7 +261,7 @@ public class PlayerTests {
     @Test
     public void testPlayerUsesTorch(){
         player.takeItem(board.getRoom(1), "torch");
-        player.useItem(board.getRoom(0), "torch");
+        player.useItem(board.getRoom(0), "torch", false);
 
         String description = board.getRoom(0).getPrimaryDescription();
         assertEquals("After using the torch, you see a sparkle in one of the cracks. " +
@@ -271,9 +271,9 @@ public class PlayerTests {
     @Test
     public void testPlayerUsesKey(){
         player.takeItem(board.getRoom(1), "torch");
-        player.useItem(board.getRoom(0), "torch");
+        player.useItem(board.getRoom(0), "torch", false);
         player.takeItem(board.getRoom(0), "key");
-        player.useItem(board.getRoom(2), "key");
+        player.useItem(board.getRoom(2), "key", false);
 
         String description = board.getRoom(2).getPrimaryDescription();
         assertEquals("The door at the north end opened!", description);
@@ -282,7 +282,7 @@ public class PlayerTests {
     @Test
     public void testPlayerUsesLighter(){
         player.takeItem(board.getRoom(7), "lighter");
-        player.useItem(board.getRoom(8), "lighter");
+        player.useItem(board.getRoom(8), "lighter", false);
 
         String description = board.getRoom(8).getPrimaryDescription();
         assertEquals("WOW, the smell of rotten eggs was actually a gas leak " +
@@ -302,7 +302,7 @@ public class PlayerTests {
 
         try{
             player.takeItem(board.getRoom(6), "calculator");
-            player.useItem(board.getRoom(5), "calculator");
+            player.useItem(board.getRoom(5), "calculator", false);
         } catch (NoSuchElementException e){
             in = new ByteArrayInputStream("64".getBytes());
             System.setIn(in);
@@ -331,7 +331,7 @@ public class PlayerTests {
         PrintStream old = System.out;
         System.setOut(ps);
 
-        player.askMathQuestion("What's 4 times 16", "64");
+        //player.askMathQuestion("What's 4 times 16", "64");
 
         System.out.flush();
         System.setOut(old);

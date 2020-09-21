@@ -84,6 +84,10 @@ public class Room {
         return secondaryDescription;
     }
 
+    public void setSecondaryDescription(String description){
+        this.secondaryDescription = description;
+    }
+
     public String getImageUrl() { return imageUrl; }
 
     public String getVideoUrl() { return videoUrl; }

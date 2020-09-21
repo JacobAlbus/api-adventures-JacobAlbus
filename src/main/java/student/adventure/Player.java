@@ -12,6 +12,7 @@ public class Player {
     private int[] position = {1, 1};
     private final List<String> directions = new ArrayList(Arrays.asList("east", "north", "west", "south"));
     private final Map<String, int[]> roomsCoordinatesForItemUse;
+    private boolean isTesting = false;
     private ArrayList<String> items = new ArrayList<>();
     private String name;
     private GameBoard board;
@@ -65,13 +66,19 @@ public class Player {
         return items;
     }
 
+    public boolean isTesting() { return isTesting; }
+
+    public void setPlayerIsTesting(boolean isPlayerTesting) { isTesting = isPlayerTesting; }
+
+    public void removeItem(String item) { items.remove(item); }
+
     /**
      * Removes item from room and adds to player inventory if it is in room and not in player's inventory
      * @param room room player is currently in
      * @param item given item that game checks is in room
      */
     public void takeItem(Room room, String item){
-        // make it so that getting and setting rooms variables is handled in room
+        // TODO make it so that getting and setting rooms variables is handled in room
         if(room.getAvailableItems().contains(item)){
             items.add(item);
             room.getAvailableItems().remove(item);
@@ -85,79 +92,57 @@ public class Player {
      * @param room player is currently in
      * @param item given item that game checks is in player's inventory and not in room
      */
-    public void dropItem(Room room, String item){
-        // make it so that getting and setting rooms variables is handled in room
+    public String dropItem(Room room, String item){
+        String playerMessage = "";
+        // TODO make it so that getting and setting rooms variables is handled in room
         if(items.contains(item) && !room.getAvailableItems().contains(item)){
             items.remove(item);
             room.addAvailableItem(item);
             printInventory();
         } else if(room.getAvailableItems().contains(item)){
-            System.out.println("Can't drop the item, it's already in the room");
+            playerMessage = "Can't drop the item, it's already in the room";
+            System.out.println(playerMessage);
         } else{
             System.out.println("It seems like you don't have that item");
         }
-
+        return playerMessage;
     }
 
     /**
      * Uses item if it is in player's inventory
      * @param item item that the player will use
      */
-    public void useItem(Room room, String item){
+    public String useItem(Room room, String item, boolean useUI){
+        String playerMessage = "";
         if(items.contains(item)){
             switch(item){
                 case "torch":
                     int[] torchCoords = roomsCoordinatesForItemUse.get("torch");
-                    if(isRoomCorrectForItemUse(room, torchCoords)){
-                        room.setPrimaryDescription(room.getSecondaryDescription());
-                        room.addAvailableItem(room.getUnavailbleItems().get(0));
-                        items.remove(item);
-                        room.printRoomMessage();
-                    }
+                    playerMessage = useTorch(room, torchCoords, item);
                     break;
                 case "key":
                     int[] keyCoords = roomsCoordinatesForItemUse.get("key");
-                    if(isRoomCorrectForItemUse(room, keyCoords)){
-                        room.setPrimaryDescription(room.getSecondaryDescription());
-                        room.addAvailableDoors(room.getUnavailableDoors().get(0));
-                        room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
-                        items.remove(item);
-                        room.printRoomMessage();
-                    }
+                    playerMessage = useKey(room, keyCoords, item);
                     break;
                 case "calculator":
                     int[] calcCoords = roomsCoordinatesForItemUse.get("calculator");
-                    if(isRoomCorrectForItemUse(room, calcCoords)){
-                        if(didPlayerAceMathTest()){
-                            room.setPrimaryDescription(room.getSecondaryDescription());
-                            room.addAvailableDoors(room.getUnavailableDoors().get(0));
-                            room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
-                            items.remove(item);
-                            room.printRoomMessage();
-                        } else{
-                            System.out.println("Better try again!");
-                        }
-                    }
+                    playerMessage = useCalculator(room, calcCoords, item, useUI);
                     break;
                 case "lighter":
                     int[] lighterCoords = roomsCoordinatesForItemUse.get("lighter");
-                    if(isRoomCorrectForItemUse(room, lighterCoords)){
-                        // make it so that getting and setting rooms variables is handled in room
-                        room.setPrimaryDescription(room.getSecondaryDescription());
-                        room.addAvailableDoors(room.getUnavailableDoors().get(0));
-                        room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
-                        items.remove(item);
-                        room.printRoomMessage();
-                    }
+                    playerMessage = useLighter(room, lighterCoords, item);
                     break;
                 default:
-                    System.out.println("Sorry but that item has no use");
+                    playerMessage = "Sorry but that item has no use";
+                    System.out.println(playerMessage);
                     break;
             }
 
         } else {
-            System.out.println("You do not have this item");
+            playerMessage = "You do not have this item";
+            System.out.println(playerMessage);
         }
+        return playerMessage;
     }
 
     /**
@@ -199,7 +184,7 @@ public class Player {
      * Checks if the room item is used in, is a valid room for that item to be used
      * @param room Room object in which useItem() is called in
      * @param coords valid coords for item to be used in
-     * @return boolean depending on wheter or not room is valid for item use
+     * @return boolean depending on whether or not room is valid for item use
      */
     private boolean isRoomCorrectForItemUse(Room room, int[] coords){
         boolean isRoomCorrect = false;
@@ -212,54 +197,66 @@ public class Player {
         return isRoomCorrect;
     }
 
-    /**
-     * Simulates a math test with basic problems; returns boolean depending on whether or not player passes test
-     * @return boolean representing whether or not player passed test
-     */
-    private boolean didPlayerAceMathTest(){
-        int numCorrect = 0;
-        int passingGrade = 4;
 
-        System.out.println("You have begun the eternal math test, pick your answers wisely!");
-
-        for(int index = 0; index < questions.getListSize(); index++){
-            Question question = questions.getGameQuestions(index);
-            numCorrect += this.askMathQuestion(question.getQuestion(), question.getAnswer());
+    private String useTorch(Room room, int[] torchCoords, String item){
+        String playerMessage = "";
+        if(isRoomCorrectForItemUse(room, torchCoords)){
+            room.setPrimaryDescription(room.getSecondaryDescription());
+            room.addAvailableItem(room.getUnavailbleItems().get(0));
+            items.remove(item);
+            room.printRoomMessage();
+        } else{
+            playerMessage = "It seems like the torch has no use in this room";
         }
-
-        if(numCorrect >= passingGrade){
-            System.out.println("Congratulations, you have passed the test");
-            return true;
-        } else {
-            System.out.println("You failed stupid, try again");
-            return false;
-        }
-
+        return playerMessage;
     }
 
-    /**
-     * Asks player a math question, takes input, and determines if it's correct
-     * Made public for testing purposes
-     * @param question the question being asked of the player
-     * @param correctAnswer correct answer to question
-     * @return 1 if player is right, 0 otherwise
-     */
-    // ask elizabeth about configuring this function for booleans
-    public int askMathQuestion(String question, String correctAnswer){
-        System.out.println(question);
-        System.out.print("> ");
-
-        Scanner playerInput = new Scanner(System.in);
-        String playerAnswer = playerInput.nextLine();
-
-        if(playerAnswer.equals(correctAnswer)){
-            System.out.println("Correct");
-            return 1;
-        } else {
-            System.out.println("Wrong");
-            return 0;
+    private String useCalculator(Room room, int[] calcCoords, String item, boolean useUI) {
+        String playerMessage = "";
+        if(isRoomCorrectForItemUse(room, calcCoords)) {
+            isTesting = true;
+            if(!useUI && questions.didPlayerAceMathTest(room)) {
+                room.setPrimaryDescription(room.getSecondaryDescription());
+                room.addAvailableDoors(room.getUnavailableDoors().get(0));
+                room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
+                items.remove(item);
+                room.printRoomMessage();
+                isTesting = false;
+            } else{
+                playerMessage = "It seems like the torch has no use in this room";
+            }
         }
-
+        return playerMessage;
     }
+
+    private String useKey(Room room, int[] keyCoords, String item){
+        String playerMessage = "";
+        if(isRoomCorrectForItemUse(room, keyCoords)){
+            room.setPrimaryDescription(room.getSecondaryDescription());
+            room.addAvailableDoors(room.getUnavailableDoors().get(0));
+            room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
+            items.remove(item);
+            room.printRoomMessage();
+        } else{
+            playerMessage = "It seems like the torch has no use in this room";
+        }
+        return playerMessage;
+    }
+
+    private String useLighter(Room room, int[] lighterCoords, String item){
+        String playerMessage = "";
+        if(isRoomCorrectForItemUse(room, lighterCoords)){
+            // TODO make it so that getting and setting rooms variables is handled in room
+            room.setPrimaryDescription(room.getSecondaryDescription());
+            room.addAvailableDoors(room.getUnavailableDoors().get(0));
+            room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
+            items.remove(item);
+            room.printRoomMessage();
+        } else{
+            playerMessage = "It seems like the torch has no use in this room";
+        }
+        return playerMessage;
+    }
+
 
 }
