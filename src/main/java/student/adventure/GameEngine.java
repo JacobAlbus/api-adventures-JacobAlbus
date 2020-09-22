@@ -116,7 +116,6 @@ public class GameEngine {
      * @param noun object or thing the player interacts with (usually an item or direction)
      */
     public void processInputs(String action, String noun){
-        while(!isPlayerInWinRoom) {
             // TODO ask elizabeth about magic strings
             switch(action) {
                 case "examine":
@@ -172,8 +171,6 @@ public class GameEngine {
             //TODO is this breaking encapsulation?
             room = board.findPlayerCurrentRoom(player);
             updateGameStatus();
-            break;
-        }
     }
 
     /**

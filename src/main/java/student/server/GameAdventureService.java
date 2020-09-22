@@ -4,9 +4,7 @@ import student.adventure.GameEngine;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 
 public class GameAdventureService implements AdventureService{
     private final static String DATABASE_URL = "jdbc:sqlite:src/main/resources/adventure.db";
@@ -39,8 +37,6 @@ public class GameAdventureService implements AdventureService{
                                                     currentGameID,
                                               true);
         allGames.put(currentGameID, newGame);
-        System.out.println(currentGameID);
-        System.out.println(allGames.size());
         return currentGameID;
     }
 
@@ -74,13 +70,18 @@ public class GameAdventureService implements AdventureService{
     @Override
     public SortedMap<String, Integer> fetchLeaderboard() throws SQLException {
         Statement stmt = dbConnection.createStatement();
-        ResultSet results;
-        if (stmt.execute("SELECT * FROM leaderboard_albus2")) {
-            results = stmt.getResultSet();
-            System.out.println(results.first());
+        SortedMap<String, Integer> leaderboard = new TreeMap();
+
+        if(stmt.execute("SELECT name, score FROM leaderboard_albus2")) {
+            ResultSet results = stmt.getResultSet();
+            while (results.next()) {
+                String name = results.getString("name");
+                int score = results.getInt("score");
+                leaderboard.put(name, score);
+            }
         } else {
             return null;
         }
-        return null;
+        return leaderboard;
     }
 }

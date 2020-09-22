@@ -79,35 +79,65 @@ public class GameQuestions {
 
     }
 
+    /**
+     * Asks web-browser players for answers to Math Test and keeps track of how many they get correct
+     * @param room Room object where player is taking test
+     * @param player Player object who is taking test
+     * @param playerAnswer answer given by player
+     * @return playerMessage indicating if they got it right or wrong
+     */
     public String askMathQuestionUI(Room room, Player player, String playerAnswer){
-        int passingGrade = 4;
-        String playerMessage = "Wrong!";
+        String playerMessage = "";
 
         if(player.isTesting()){
-            String correctAnswer = questions.get(currentQuestionIndex).getCorrectAnswer();
-            if(playerAnswer.equals(correctAnswer)){
-                correctAnswerCount++;
-                playerMessage = "Correct!";
-            }
+            playerMessage = checkPlayerAnswer(playerAnswer);
             currentQuestionIndex++;
 
             if(currentQuestionIndex == questions.size()){
                 player.setPlayerIsTesting(false);
                 currentQuestionIndex = 0;
             }
-            if(!player.isTesting() && correctAnswerCount >= passingGrade){
-                playerMessage = "Congratualtion, you passed the test!";
-                room.addAvailableDoors(room.getUnavailableDoors().get(0));
-                room.setPrimaryDescription(room.getSecondaryDescription());
-                player.removeItem("calculator");
-                correctAnswerCount = 0;
-            } else if(!player.isTesting()){
-                playerMessage = "You failed, try again";
-                correctAnswerCount = 0;
+
+            if(!player.isTesting()){
+                playerMessage = checkIfPlayerPassed(player, room);
             }
         }
 
         return playerMessage;
     }
 
+    /**
+     * Checks to see if player given answer is correct
+     * @param playerAnswer answer given by the player
+     * @return "correct" or "wrong" depending on whether or not player answered correctly
+     */
+    private String checkPlayerAnswer(String playerAnswer){
+        String correctAnswer = questions.get(currentQuestionIndex).getCorrectAnswer();
+        if(playerAnswer.equals(correctAnswer)){
+            correctAnswerCount++;
+            return "Correct!";
+        } else {
+            return "Wrong!";
+        }
+    }
+
+    /**
+     * Checks to see if player passed test given some
+     * @param player Player object taking test
+     * @param room Room object where player is taking test
+     * @return "passed" or "failed" depending on whether or not player passed test
+     */
+    private String checkIfPlayerPassed(Player player, Room room) {
+        int passingGrade = 4;
+        if (correctAnswerCount >= passingGrade) {
+            room.addAvailableDoors(room.getUnavailableDoors().get(0));
+            room.setPrimaryDescription(room.getSecondaryDescription());
+            player.removeItem("calculator");
+            correctAnswerCount = 0;
+            return "Congratualtion, you passed the test!";
+        } else {
+            correctAnswerCount = 0;
+            return "You failed, try again";
+        }
+    }
 }

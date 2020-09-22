@@ -197,7 +197,13 @@ public class Player {
         return isRoomCorrect;
     }
 
-
+    /**
+     * Uses torch if in valid room, doesn't otherwise
+     * @param room room object where item is being used
+     * @param torchCoords coordinates for valid item use room
+     * @param item given item (torch) player is trying to use
+     * @return message depending on how/where torch is used
+     */
     private String useTorch(Room room, int[] torchCoords, String item){
         String playerMessage = "";
         if(isRoomCorrectForItemUse(room, torchCoords)){
@@ -211,6 +217,13 @@ public class Player {
         return playerMessage;
     }
 
+    /**
+     * Uses calculator if in valid room, doesn't otherwise
+     * @param room room object where item is being used
+     * @param calcCoords coordinates for valid item use room
+     * @param item given item (calculator) player is trying to use
+     * @return message depending on how/where calculator is used
+     */
     private String useCalculator(Room room, int[] calcCoords, String item, boolean useUI) {
         String playerMessage = "";
         if(isRoomCorrectForItemUse(room, calcCoords)) {
@@ -229,6 +242,13 @@ public class Player {
         return playerMessage;
     }
 
+    /**
+     * Uses key if in valid room, doesn't otherwise
+     * @param room room object where item is being used
+     * @param keyCoords coordinates for valid item use room
+     * @param item given item (key) player is trying to use
+     * @return message depending on how/where key is used
+     */
     private String useKey(Room room, int[] keyCoords, String item){
         String playerMessage = "";
         if(isRoomCorrectForItemUse(room, keyCoords)){
@@ -243,6 +263,13 @@ public class Player {
         return playerMessage;
     }
 
+    /**
+     * Uses lighter if in valid room, doesn't otherwise
+     * @param room room object where item is being used
+     * @param lighterCoords coordinates for valid item use room
+     * @param item given item (lighter) player is trying to use
+     * @return message depending on how/where lighter is used
+     */
     private String useLighter(Room room, int[] lighterCoords, String item){
         String playerMessage = "";
         if(isRoomCorrectForItemUse(room, lighterCoords)){

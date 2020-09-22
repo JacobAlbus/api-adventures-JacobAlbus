@@ -121,7 +121,7 @@
   },
   {
     "roomCoordinates" : [5, 1],
-    "availableDoors" : ["north"],
+    "availableDoors" : [],
     "unavailableDoors" :  [],
     "availableItems" :  [],
     "unavailableItems" : [],
