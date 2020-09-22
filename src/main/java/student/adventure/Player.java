@@ -228,17 +228,17 @@ public class Player {
         String playerMessage = "";
         if(isRoomCorrectForItemUse(room, calcCoords)) {
             isTesting = true;
-            if(!useUI && questions.didPlayerAceMathTest(room)) {
+            if (!useUI && questions.didPlayerAceMathTest(room)) {
                 room.setPrimaryDescription(room.getSecondaryDescription());
                 room.addAvailableDoors(room.getUnavailableDoors().get(0));
-                room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
                 items.remove(item);
                 room.printRoomMessage();
                 isTesting = false;
-            } else{
-                playerMessage = "It seems like the torch has no use in this room";
             }
+        } else {
+            playerMessage = "It seems like the calculator has no use in this room";
         }
+
         return playerMessage;
     }
 
@@ -254,11 +254,10 @@ public class Player {
         if(isRoomCorrectForItemUse(room, keyCoords)){
             room.setPrimaryDescription(room.getSecondaryDescription());
             room.addAvailableDoors(room.getUnavailableDoors().get(0));
-            room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
             items.remove(item);
             room.printRoomMessage();
         } else{
-            playerMessage = "It seems like the torch has no use in this room";
+            playerMessage = "It seems like the key has no use in this room";
         }
         return playerMessage;
     }
@@ -276,11 +275,10 @@ public class Player {
             // TODO make it so that getting and setting rooms variables is handled in room
             room.setPrimaryDescription(room.getSecondaryDescription());
             room.addAvailableDoors(room.getUnavailableDoors().get(0));
-            room.removeUnavailableDoors(room.getUnavailableDoors().get(0));
             items.remove(item);
             room.printRoomMessage();
         } else{
-            playerMessage = "It seems like the torch has no use in this room";
+            playerMessage = "It seems like the lighter has no use in this room";
         }
         return playerMessage;
     }

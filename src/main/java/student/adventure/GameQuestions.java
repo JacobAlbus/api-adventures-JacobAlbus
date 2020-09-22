@@ -86,23 +86,46 @@ public class GameQuestions {
      * @param playerAnswer answer given by player
      * @return playerMessage indicating if they got it right or wrong
      */
-    public String askMathQuestionUI(Room room, Player player, String playerAnswer){
-        String playerMessage = "";
+//    public String askMathQuestionUI(Room room, Player player, String playerAnswer){
+//        String playerMessage = "";
+//
+//        if(player.isTesting()){
+//            room.setPrimaryDescription(startedTestMessage);
+//
+//            playerMessage = checkPlayerAnswer(playerAnswer);
+//            currentQuestionIndex++;
+//
+//            if(currentQuestionIndex == questions.size()){
+//                player.setPlayerIsTesting(false);
+//                currentQuestionIndex = 0;
+//            }
+//
+//            if(!player.isTesting()){
+//                playerMessage = checkIfPlayerPassed(player, room);
+//            }
+//        }
+//
+//        return playerMessage;
+//    }
 
-        if(player.isTesting()){
+    public String askMathQuestionUI(Room room, Player player, String playerAnswer) {
+        String playerMessage = "Wrong!";
+
+        if (player.isTesting()) {
             playerMessage = checkPlayerAnswer(playerAnswer);
             currentQuestionIndex++;
 
-            if(currentQuestionIndex == questions.size()){
+            if (currentQuestionIndex == questions.size()) {
                 player.setPlayerIsTesting(false);
                 currentQuestionIndex = 0;
             }
 
-            if(!player.isTesting()){
+            if(!player.isTesting()) {
                 playerMessage = checkIfPlayerPassed(player, room);
             }
-        }
 
+            return playerMessage;
+        }
         return playerMessage;
     }
 
