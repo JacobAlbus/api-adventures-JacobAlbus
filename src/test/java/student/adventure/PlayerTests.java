@@ -315,28 +315,10 @@ public class PlayerTests {
         String printedString = baos.toString();
         assertEquals("You have begun the eternal math test, pick your answers wisely!\r\n" +
                 "What is the product of the squares of four and two\r\n" +
-                "> Correct\r\n" +
+                "> Correct!\r\n" +
                 "Give me pi to the first 3 digits\r\n" +
                 "> ", printedString);
     }
 
-    @Test
-    public void testPlayerMathTest(){
-        // Next two lines are from: https://bugsdb.com/_en/debug/09bdbc2d248d31d6785ba772ea8689cb
-        ByteArrayInputStream in = new ByteArrayInputStream("64".getBytes());
-        System.setIn(in);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        PrintStream old = System.out;
-        System.setOut(ps);
-
-        //player.askMathQuestion("What's 4 times 16", "64");
-
-        System.out.flush();
-        System.setOut(old);
-
-        String printedString = baos.toString();
-        assertEquals("What's 4 times 16\r\n> Correct\r\n", printedString);
-    }
 }

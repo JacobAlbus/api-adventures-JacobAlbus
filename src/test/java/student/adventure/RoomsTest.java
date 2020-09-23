@@ -25,6 +25,8 @@ public class RoomsTest {
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(filePath));
+            Reader questionsReader = Files.newBufferedReader(
+                    Paths.get("src/main/resources/GameQuestions.json"));
 
             board = gson.fromJson(reader, GameBoard.class);
             reader.close();
@@ -34,6 +36,7 @@ public class RoomsTest {
             throw new IOException("The specified file does not exist");
         }
     }
+
     @Test
     public void testPrintRoomMessage(){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -5,7 +5,6 @@ import student.adventure.GameEngine;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.reverseOrder;
 import static java.util.Map.Entry.comparingByValue;
@@ -88,8 +87,14 @@ public class GameAdventureService implements AdventureService{
      */
     private void addPlayerToLeaderboard(String playerName, int playerScore) throws SQLException {
         Statement stmt = dbConnection.createStatement();
-        String add = String.format("INSERT INTO leaderboard_albus2 VALUES (10, '%s', %d)", playerName, playerScore);
-        stmt.execute(add);
+        try{
+            stmt.execute("CREATE TABLE  leaderboard_albus2 (name VARCHAR(50), score INTEGER);\n");
+            String add = String.format("INSERT INTO leaderboard_albus2 VALUES ('%s', %d)", playerName, playerScore);
+            stmt.execute(add);
+        } catch (Exception e){
+            String add = String.format("INSERT INTO leaderboard_albus2 VALUES ('%s', %d)", playerName, playerScore);
+            stmt.execute(add);
+        }
     }
 
     @Override

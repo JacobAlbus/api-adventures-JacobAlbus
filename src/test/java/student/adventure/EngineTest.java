@@ -3,7 +3,6 @@ package student.adventure;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 
 import com.google.gson.Gson;
 import org.junit.Before;
@@ -61,14 +60,20 @@ public class EngineTest {
         PrintStream old = System.out;
         System.setOut(ps);
 
+        engine.processInputs("go", "east");
+        engine.processInputs("take", "torch");
         engine.processInputs("examine", "foo");
 
         System.out.flush();
         System.setOut(old);
 
-        String printedString = baos.toString();
-        assertEquals("You're in a dark room with one visible door." +
-                "\r\nDirection: east \r\nItems:  \r\n", printedString);
+        String printedString = baos.toString().replace("\r\n", "\n");
+        assertEquals("This room doesn't look too different than the last\n" +
+                "Direction: west north \n" +
+                "Items: torch \n" +
+                "bob's Inventory: [torch]\n" +
+                "This room doesn't look too different than the last\n" +
+                "Direction: west north \n", printedString);
     }
 
     @Test
@@ -235,14 +240,16 @@ public class EngineTest {
         engine.processInputs("go", "east");
         engine.processInputs("go", "north");
         engine.processInputs("go", "north");
-        engine.createPrintedMap();
+        System.out.println(engine.createPrintedMap());
 
         System.out.flush();
         System.setOut(old);
 
         String printedString = baos.toString();
         printedString = printedString.replace("\r", "").replace("\n", "");
-        assertEquals("You cannot go in that direction0111", printedString);
+        assertEquals("This room doesn't look too different than the lastDirection: west north Items: torch " +
+                "There's a door at the north end of the room, but it's locked.Direction: south Items: torch " +
+                "You cannot go in that direction0111", printedString);
     }
 
     @Test
@@ -254,21 +261,21 @@ public class EngineTest {
 
         engine.processInputs("go", "east");
         engine.processInputs("go", "east");
-        engine.createPrintedMap();
+        System.out.println(engine.createPrintedMap());
 
         System.out.flush();
         System.setOut(old);
-
         String printedString = baos.toString().replace("\r\n", "");
-        assertEquals("You cannot go in that direction11\n", printedString);
+        assertEquals("This room doesn't look too different than the lastDirection: west north Items: torch " +
+                             "You cannot go in that direction11", printedString);
     }
 
     @Test
     public void testPlayerWins() {
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        PrintStream ps = new PrintStream(baos);
-//        PrintStream old = System.out;
-//        System.setOut(ps);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        PrintStream old = System.out;
+        System.setOut(ps);
 
         engine.processInputs("go", "east");
         engine.processInputs("take", "torch");
@@ -290,20 +297,53 @@ public class EngineTest {
         engine.processInputs("go", "south");
         engine.processInputs("go", "south");
 
-//        System.out.flush();
-//        System.setOut(old);
-//
-//        String printedString = baos.toString();
-//    assertEquals("After using the torch, you see a sparkle in one of the cracks. "
-//            + "After investigating, you see a key\r\nDirection: east \r\nItems:  key \r\n"
-//            + "The door at the north end opened!\r\nDirection: south north \r\nItems: torch \r\n"
-//            + "WOW, the smell of rotten eggs was actually a gas leak and the lighter caused the room to combust. "
-//            + "The south door was blown down\r\nDirection:  south \r\nItems:  \r\n"
-//            + "You emerge in the dormitory hallway, you look back and see your room number on the wall. "
-//            + "Maybe it's time for spring cleaning?\r\nDirection:  \r\nItems:  \r\n"
-//            + "You emerge in the dormitory hallway, you look back and see your room number on the wall. "
-//            + "Maybe it's time for spring cleaning?\r\nDirection:  \r\nItems:  \r\n"
-//            + "> You win! Play again to venture back into your dorm\r\n", printedString);
+        System.out.flush();
+        System.setOut(old);
+
+        String printedString = baos.toString().replace("\r\n", "\n");
+    assertEquals("This room doesn't look too different than the last\n" +
+            "Direction: west north \n" +
+            "Items: torch \n" +
+            "bob's Inventory: [torch]\n" +
+            "You're in a dark room with one visible door.\n" +
+            "Direction: east \n" +
+            "After using the torch, you see a sparkle in one of the cracks. After investigating, you see a key\n" +
+            "Direction: east \n" +
+            "Items: key \n" +
+            "bob's Inventory: [key]\n" +
+            "This room doesn't look too different than the last\n" +
+            "Direction: west north \n" +
+            "There's a door at the north end of the room, but it's locked.\n" +
+            "Direction: south \n" +
+            "Items: torch \n" +
+            "The door at the north end opened!\n" +
+            "Direction: south north \n" +
+            "Items: torch \n" +
+            "There are four different doors, pick your path wisely\n" +
+            "Direction: north east south west \n" +
+            "Doesn't seem to be too much in this room, except a small computational device\n" +
+            "Direction: south \n" +
+            "Items: calculator \n" +
+            "bob's Inventory: [calculator]\n" +
+            "There are four different doors, pick your path wisely\n" +
+            "Direction: north east south west \n" +
+            "There's a locked door with some ancient symbol: 'Requires TI-84' \n" +
+            "Direction: west east \n" +
+            "There's sun light coming from the cracks in the room, you're getting close to the exit\n" +
+            "Direction: west east \n" +
+            "Items: lighter \n" +
+            "bob's Inventory: [calculator, lighter]\n" +
+            "It smells of rotten eggs in this room, and there's a big steel door to the south\n" +
+            "Direction: west \n" +
+            "WOW, the smell of rotten eggs was actually a gas leak and the lighter caused the room to combust. The south door was blown down\n" +
+            "Direction: west south \n" +
+            "The exit is right there at the other end...MAKE A RUN FOR IT!!!\n" +
+            "Direction: south \n" +
+            "You emerge in the dormitory hallway, you look back and see your room number on a plaque next to the door. Maybe it's time for spring cleaning?\n" +
+            "Direction: \n" +
+            "You emerge in the dormitory hallway, you look back and see your room number on a plaque next to the door. Maybe it's time for spring cleaning?\n" +
+            "You win! Play again to venture back into your dorm\n" +
+            "Direction: \n", printedString);
     }
 
 }

@@ -8,18 +8,18 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//         Scanner prompt for name moved to main method for testing purposes
-//        System.out.println("Hello player! What would you like to name your adventurer?");
-//        System.out.print("> ");
-//
-//        Scanner userInput = new Scanner(System.in);
-//        String name = userInput.nextLine();
-//        System.out.println(".\n" + ".\n" + ".\n.");
-//
-//        String path = "src/main/resources/Rooms.json";
-//        GameEngine engine = new GameEngine(path, name, 0, false);
-//        engine.playGame();
-        HttpServer server = AdventureServer.createServer(AdventureResource.class);
-        server.start();
+ //        Scanner prompt for name moved to main method for testing purposes
+        System.out.println("Hello player! What would you like to name your adventurer?");
+        System.out.print("> ");
+
+        Scanner userInput = new Scanner(System.in);
+        String name = userInput.nextLine();
+        System.out.println(".\n" + ".\n" + ".\n.");
+
+        String path = "src/main/resources/Rooms.json";
+        GameEngine engine = new GameEngine(path, name, 0, false);
+        engine.playGame();
+//        HttpServer server = AdventureServer.createServer(AdventureResource.class);
+//        server.start();
     }
 }
