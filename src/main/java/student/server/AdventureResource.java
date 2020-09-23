@@ -50,7 +50,7 @@ public class AdventureResource {
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create() throws AdventureException, IOException {
+    public Response create() throws AdventureException, IOException, SQLException {
         int id = service.newGame();
         return getGame(id);
     }
@@ -97,7 +97,7 @@ public class AdventureResource {
     @Path("instance/{id: \\d+}/command")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response handleCommand(@PathParam("id") int id, Command command) {
+    public Response handleCommand(@PathParam("id") int id, Command command) throws SQLException {
         service.executeCommand(id, command);
 
         return getGame(id);

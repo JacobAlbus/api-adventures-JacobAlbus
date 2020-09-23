@@ -61,7 +61,7 @@
   },
   {
     "roomCoordinates" : [3, 3],
-    "availableDoors" : ["west"],
+    "availableDoors" : ["west", "east"],
     "unavailableDoors" :  ["east"],
     "availableItems" :  [],
     "unavailableItems" : [],
@@ -121,7 +121,7 @@
   },
   {
     "roomCoordinates" : [5, 1],
-    "availableDoors" : [],
+    "availableDoors" : ["north"],
     "unavailableDoors" :  [],
     "availableItems" :  [],
     "unavailableItems" : [],

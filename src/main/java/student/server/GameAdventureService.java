@@ -8,12 +8,11 @@ import java.util.*;
 
 public class GameAdventureService implements AdventureService{
     private final static String DATABASE_URL = "jdbc:sqlite:src/main/resources/adventure.db";
-    private final Connection dbConnection;
+    private final Connection dbConnection = DriverManager.getConnection(DATABASE_URL);
     private Map<Integer, GameEngine> allGames;
     private int currentGameID = 0;
 
     public GameAdventureService() throws SQLException {
-        dbConnection = DriverManager.getConnection(DATABASE_URL);
         currentGameID = 0;
         allGames = new HashMap<>();
     }
@@ -30,7 +29,7 @@ public class GameAdventureService implements AdventureService{
      * @throws IOException thrown if specified json does not exist
      */
     @Override
-    public int newGame() throws IOException {
+    public int newGame() throws IOException, SQLException {
         currentGameID++;
         GameEngine newGame = new GameEngine("src/main/resources/Rooms.json",
                                              "bob",
@@ -61,11 +60,34 @@ public class GameAdventureService implements AdventureService{
     }
 
     @Override
-    public void executeCommand(int id, Command command) {
+    public void executeCommand(int id, Command command) throws SQLException {
         String action = command.getCommandName();
         String noun = command.getCommandValue();
         allGames.get(id).processInputs(action, noun);
+
+        GameStatus updatedStatus = getGame(id);
+        boolean didPlayerWin = updatedStatus.getState().getDidPlayerWin();
+
+        if(didPlayerWin){
+            String playerName = command.getPlayerName();
+            int playerScore = updatedStatus.getState().getGameScore();
+            addPlayerToLeaderboard(playerName, playerScore);
+        }
     }
+
+    /**
+     * Adds player and their score to the leaderboard if they win
+     * @param playerName String name of player
+     * @param playerScore Int score of their game
+     * @throws SQLException Required for Statement object
+     */
+    private void addPlayerToLeaderboard(String playerName, int playerScore) throws SQLException {
+        Statement stmt = dbConnection.createStatement();
+        String add = String.format("INSERT INTO leaderboard_albus2 VALUES (10, '%s', %d)", playerName, playerScore);
+        stmt.execute(add);
+    }
+
+
 
     @Override
     public SortedMap<String, Integer> fetchLeaderboard() throws SQLException {

@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class GameQuestions {
     private List<Question> questions;
     private int currentQuestionIndex = 0;
-    private boolean isTestOccuring = false;
     private int correctAnswerCount = 0;
 
     public GameQuestions(List<Question> gameQuestions){
@@ -17,22 +16,13 @@ public class GameQuestions {
         return questions.get(i);
     }
 
-    public int getListSize(){
-        return questions.size();
-    }
-
     public int getCurrentQuestionIndex() { return currentQuestionIndex; }
-
-    public boolean isTestOccuring(){ return isTestOccuring; }
-
-    public void setTestOccuring(boolean isTestOccuring) { this.isTestOccuring = isTestOccuring; }
 
     /**
      * Simulates a math test with basic problems; returns boolean depending on whether or not player passes test
      * @return boolean representing whether or not player passed test
      */
     public boolean didPlayerAceMathTest(Room room){
-        isTestOccuring = true;
         int numCorrect = 0;
         int passingGrade = 4;
 
@@ -41,7 +31,6 @@ public class GameQuestions {
         for(Question question : questions){
             numCorrect += this.askMathQuestionScanner(question.getQuestion(), question.getCorrectAnswer());
         }
-        isTestOccuring = false;
         room.setPrimaryDescription(room.getPrimaryDescription());
 
         if(numCorrect >= passingGrade){

@@ -17,7 +17,7 @@ public interface AdventureService {
      * Creates a new Adventure game and stores it.
      * @return the id of the game.
      */
-    int newGame() throws AdventureException, IOException;
+    int newGame() throws AdventureException, IOException, SQLException;
 
     /**
      * Returns the state of the game instance associated with the given ID.
@@ -38,7 +38,7 @@ public interface AdventureService {
      * @param id the instance id
      * @param command the issued command
      */
-    void executeCommand(int id, Command command);
+    void executeCommand(int id, Command command) throws SQLException;
 
     /**
      * Returns a sorted leaderboard of player "high" scores.

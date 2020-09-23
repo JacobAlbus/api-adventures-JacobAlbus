@@ -10,12 +10,14 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
 public class GameEngine {
-    private boolean isPlayerInWinRoom = false;
+    private boolean didPlayerWin = false;
     private int gameID;
     private String playerMessage;
     private int gameScore = 1000000;
@@ -66,7 +68,7 @@ public class GameEngine {
     public void playGame(){
         room.printRoomMessage();
 
-        while(!isPlayerInWinRoom){
+        while(!didPlayerWin){
             printInputPrompt();
             List<String>  inputs = filterInputs();
             String  action = inputs.get(0);
@@ -138,13 +140,11 @@ public class GameEngine {
                 case "go":
                     deductGameScore();
                     int[] updatedRoomCoords = player.updatePosition(room, noun);
-                    checkPlayerInWinRoom(updatedRoomCoords);
 
-                    if(!Arrays.equals(room.getRoomCoordinates(), updatedRoomCoords) && !isPlayerInWinRoom) {
+                    if(!Arrays.equals(room.getRoomCoordinates(), updatedRoomCoords) && !didPlayerWin) {
                         room = board.findPlayerCurrentRoom(player);
                         room.printRoomMessage();
                     }
-
                     break;
                 case "answer":
                     if(player.isTesting()){
@@ -170,6 +170,7 @@ public class GameEngine {
             }
             //TODO is this breaking encapsulation?
             room = board.findPlayerCurrentRoom(player);
+            checkPlayerInWinRoom(player.getPosition());
             updateGameStatus();
     }
 
@@ -216,7 +217,7 @@ public class GameEngine {
             room = board.findPlayerCurrentRoom(player);
             room.setPrimaryDescription(room.getSecondaryDescription());
             room.printRoomMessage();
-            isPlayerInWinRoom = true;
+            didPlayerWin = true;
         }
     }
 
@@ -229,16 +230,21 @@ public class GameEngine {
         String message = room.getPrimaryDescription();
         String imageUrl = room.getImageUrl();
         String videoUrl = room.getVideoUrl();
-        AdventureState state = new AdventureState(createPrintedMap(), gameScore, "", playerMessage);
-        HashMap<String, List<String>> commandOptions = new HashMap();
+        AdventureState state = new AdventureState(createPrintedMap(),
+                                                  gameScore,
+                                                  "",
+                                                  playerMessage,
+                                                  didPlayerWin);
+        HashMap<String, List<String>> commandOptions = new HashMap<>();
 
         if(player.isTesting()){
             int index = questions.getCurrentQuestionIndex();
             Question currentQuestion = questions.getGameQuestions(index);
-
             ArrayList<String> playerAnswers = currentQuestion.getPlayerAnswers();
+            String playerQuestion = currentQuestion.getQuestion();
+
             commandOptions.put("answer", playerAnswers);
-            state = new AdventureState(createPrintedMap(), gameScore, currentQuestion.getQuestion(), playerMessage);
+            state = new AdventureState(createPrintedMap(), gameScore, playerQuestion, playerMessage, didPlayerWin);
         } else {
             commandOptions.put("go", room.getAvailableDoors());
             if(room.getAvailableItems().size() != 0){
@@ -253,6 +259,9 @@ public class GameEngine {
         status = new GameStatus(error, id, message, imageUrl, videoUrl, state, commandOptions);
     }
 
+    /**
+     * Deducts set amount of points from gameScore for every action player does
+     */
     private void deductGameScore(){
         int scoreDeduction = 10000;
         gameScore -= scoreDeduction;

@@ -20,14 +20,17 @@ public class AdventureState {
     private int gameScore;
     private String currentQuestion;
     private String playerMessage;
+    private boolean didPlayerWin;
 
-    public AdventureState(String map, int gameScore, String currentQuestion, String playerMessage){
+    public AdventureState(String map, int gameScore, String currentQuestion, String playerMessage, boolean didPlayerWin){
         this.map = map;
         this.gameScore = gameScore;
         this.currentQuestion = currentQuestion;
         this.playerMessage = playerMessage;
+        this.didPlayerWin = didPlayerWin;
     }
 
+    // used by AdventureServer
     public String getMap(){
         return map;
     }
@@ -36,11 +39,15 @@ public class AdventureState {
         return gameScore;
     }
 
+    // used by AdventureServer
     public String getCurrentQuestion(){
         return currentQuestion;
     }
 
+    // used by AdventureServer
     public String getPlayerMessage() {
         return playerMessage;
     }
+
+    public boolean getDidPlayerWin() { return didPlayerWin; }
 }

@@ -3,6 +3,7 @@ package student.adventure;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 import com.google.gson.Gson;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsInvalidInput(){
+    public void testProcessInputsInvalidInput() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -54,7 +55,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsExamine(){
+    public void testProcessInputsExamine() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -71,7 +72,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsTake(){
+    public void testProcessInputsTake() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -87,7 +88,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsDrop(){
+    public void testProcessInputsDrop() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -103,7 +104,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsUse(){
+    public void testProcessInputsUse() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -119,7 +120,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsGo(){
+    public void testProcessInputsGo() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -135,7 +136,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsCheck(){
+    public void testProcessInputsCheck() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -151,7 +152,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsHelp(){
+    public void testProcessInputsHelp() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -173,7 +174,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testProcessInputsDefault(){
+    public void testProcessInputsDefault() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -225,7 +226,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testPrintOutSquareMap(){
+    public void testPrintOutSquareMap()  {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -245,7 +246,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testPrintOutRectangleMap(){
+    public void testPrintOutRectangleMap() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -263,7 +264,7 @@ public class EngineTest {
     }
 
     @Test
-    public void testPlayerWins(){
+    public void testPlayerWins() {
 //        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //        PrintStream ps = new PrintStream(baos);
 //        PrintStream old = System.out;

@@ -113,7 +113,7 @@ public class Player {
      * @param item item that the player will use
      */
     public String useItem(Room room, String item, boolean useUI){
-        String playerMessage = "";
+        String playerMessage;
         if(items.contains(item)){
             switch(item){
                 case "torch":
