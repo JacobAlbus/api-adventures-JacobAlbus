@@ -219,7 +219,7 @@ public class EngineTest {
             }
 
             testPlayer.updatePosition(testBoard.getRoom(0), "east");
-            System.out.println(testBoard.findPlayerCurrentRoom(testPlayer));
+            System.out.println(testBoard.findPlayerCurrentRoom(testPlayer).getAvailableDoors());
 
             System.out.flush();
             System.setOut(old);
@@ -227,7 +227,7 @@ public class EngineTest {
             String printedString = baos.toString();
             assertEquals("It seems you've wandered off the path of destiny. " +
                                  "You have been returned to the first room.\r\n" +
-                                 "> student.adventure.Room@483bf400\r\n", printedString);
+                                 "> [east]\r\n", printedString);
     }
 
     @Test

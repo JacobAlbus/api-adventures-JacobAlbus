@@ -51,7 +51,7 @@ public class RoomsTest {
 
         String printedString = baos.toString().split(">")[0];
         assertEquals("You're in a dark room with one visible door." +
-                "\r\nDirection: east \r\nItems:  \r\n", printedString);
+                "\r\nDirection: east \r\n", printedString);
     }
 
     @Test
