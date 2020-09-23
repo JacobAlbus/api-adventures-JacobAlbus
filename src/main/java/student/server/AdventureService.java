@@ -2,6 +2,7 @@ package student.server;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.SortedMap;
 
 /**
@@ -44,5 +45,5 @@ public interface AdventureService {
      * Returns a sorted leaderboard of player "high" scores.
      * @return a sorted map of player names to scores
      */
-    SortedMap<String, Integer> fetchLeaderboard() throws SQLException;
+    LinkedHashMap<String, Integer> fetchLeaderboard() throws SQLException;
 }

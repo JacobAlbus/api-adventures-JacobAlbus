@@ -5,6 +5,11 @@ import student.adventure.GameEngine;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.reverseOrder;
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.toMap;
 
 public class GameAdventureService implements AdventureService{
     private final static String DATABASE_URL = "jdbc:sqlite:src/main/resources/adventure.db";
@@ -87,12 +92,10 @@ public class GameAdventureService implements AdventureService{
         stmt.execute(add);
     }
 
-
-
     @Override
-    public SortedMap<String, Integer> fetchLeaderboard() throws SQLException {
+    public LinkedHashMap<String, Integer> fetchLeaderboard() throws SQLException {
         Statement stmt = dbConnection.createStatement();
-        SortedMap<String, Integer> leaderboard = new TreeMap();
+        LinkedHashMap<String, Integer> leaderboard = new LinkedHashMap<>();
 
         if(stmt.execute("SELECT name, score FROM leaderboard_albus2")) {
             ResultSet results = stmt.getResultSet();
@@ -104,6 +107,26 @@ public class GameAdventureService implements AdventureService{
         } else {
             return null;
         }
+
+        leaderboard = sortLeaderBoard(leaderboard);
         return leaderboard;
+    }
+
+    /**
+     * sorts leaderboard by values
+     * @param leaderboard LinkedHashMap to be sorted
+     * @return LinkedHashMap sorted by descending value
+     */
+    private LinkedHashMap<String, Integer> sortLeaderBoard(LinkedHashMap<String, Integer> leaderboard){
+        // code is from: https://stackoverflow.com/questions/29860667/how-to-sort-a-linkedhashmap-by-value-in-decreasing-order-in-java-stream
+        LinkedHashMap<String, Integer> newBoard = leaderboard.entrySet().stream()
+                .sorted(comparingByValue(reverseOrder()))
+                .collect(toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (x,y)-> {throw new AssertionError();},
+                        LinkedHashMap::new
+                ));
+        return newBoard;
     }
 }
